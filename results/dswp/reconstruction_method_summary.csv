@@ -1,0 +1,5 @@
+reconstruction_method,n_deployments,n_reference_positions,mean_of_deployment_means_m,median_of_deployment_means_m,mean_of_deployment_medians_m,median_of_deployment_medians_m,n_lowest_mean_error
+constant_speed,20,85,351.2925,228.695,249.52399999999997,159.53,8
+depth_derived,20,85,1222.161,1115.835,1021.484,881.875,0
+ocdr,20,85,582.3815,407.765,403.898,261.07,4
+pitch_adaptive_hybrid,20,85,339.033,223.79000000000002,219.398,103.86,8

@@ -1,0 +1,13 @@
+comparison,reference_gmm_3d,aligned_alternative,count
+gmm_vertical_speed,A,A,1769
+gmm_vertical_speed,A,B,95
+gmm_vertical_speed,B,A,70
+gmm_vertical_speed,B,B,1554
+corner_3d_speed,A,A,1787
+corner_3d_speed,A,B,77
+corner_3d_speed,B,A,0
+corner_3d_speed,B,B,1624
+corner_vertical_speed,A,A,1716
+corner_vertical_speed,A,B,148
+corner_vertical_speed,B,A,44
+corner_vertical_speed,B,B,1580

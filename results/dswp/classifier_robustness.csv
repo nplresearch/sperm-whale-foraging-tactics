@@ -1,0 +1,4 @@
+comparison,n,agreement,cohen_kappa,labels_flipped
+gmm_vertical_speed,3488,0.9526949541284404,0.9050339654721768,False
+corner_3d_speed,3488,0.9779243119266054,0.9557735932572251,False
+corner_vertical_speed,3488,0.944954128440367,0.8898387164694488,False

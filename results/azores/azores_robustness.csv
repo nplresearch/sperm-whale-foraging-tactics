@@ -1,0 +1,9 @@
+analysis,n_per_corner,metric,estimate,p_value
+corner_split,20.0,mean_prey_depth_m,111.0,0.0027695773618182057
+corner_split,20.0,prey_echo_count,261.5,0.08465734823839523
+corner_split,25.0,mean_prey_depth_m,195.0,0.0010957771077924486
+corner_split,25.0,prey_echo_count,403.0,0.07142568782071883
+corner_split,29.0,mean_prey_depth_m,231.0,0.0028154478157847015
+corner_split,29.0,prey_echo_count,533.0,0.03660418392942207
+continuous_diagonal_rank,,prey_echo_count,-0.22147209489372863,0.09476443685090172
+continuous_diagonal_rank,,mean_prey_depth_m,-0.45628946367482787,0.0051568445453564465

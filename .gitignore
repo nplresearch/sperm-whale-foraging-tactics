@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Notebooks and local execution
+.ipynb_checkpoints/
+notebooks_executed/
+jupyter_server_config.py
+
+# OS and editors
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*
+secrets*
+
+# Raw or opaque scientific-data formats: these are outside the public boundary
+data/raw/
+data/private/
+data/original/
+*.mat
+*.wav
+*.flac
+*.aif
+*.aiff
+*.mp3
+*.tdms
+*.pkl
+*.pickle
+
+# Files retrieved from the public Azores archive stay local
+local-data/
+data/azores/downloads/
+data/azores/source/
+
+# Temporary products
+build/
+dist/
+tmp/
+*.tmp

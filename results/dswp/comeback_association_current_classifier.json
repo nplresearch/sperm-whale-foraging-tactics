@@ -1,0 +1,9 @@
+{
+  "n_deployments": 18,
+  "n_buzzes": 1660,
+  "pooled_odds_ratio": 1.1507709578232503,
+  "ci_low": 0.8066890877160059,
+  "ci_high": 1.6416161040666641,
+  "p_value": 0.43267079310431233,
+  "homogeneity_p_value": 0.09637461696002836
+}

@@ -1,0 +1,30 @@
+{
+  "analysis": "CETI 2024 derived buzz validation",
+  "n_buzzes": 336,
+  "schema": [
+    "unit_id",
+    "dive_id",
+    "buzz_order_in_dive",
+    "has_kinematics",
+    "n_clicks",
+    "buzz_duration_s",
+    "ramp_up_duration_s",
+    "median_click_rate_hz",
+    "max_click_rate_hz",
+    "depth_mean_m",
+    "depth_max_dive_m",
+    "speed_3d_mps",
+    "vertical_speed_mps",
+    "roll_speed_radps",
+    "pre_buzz_vertical_speed_mps",
+    "post_buzz_pause_s",
+    "vertical_direction_before",
+    "vertical_direction_after",
+    "straightness_before_10m",
+    "straightness_after_10m",
+    "straightness_before_20m",
+    "straightness_after_20m",
+    "time_to_next_buzz_s",
+    "path_to_next_buzz_m"
+  ]
+}

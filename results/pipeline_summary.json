@@ -1,0 +1,85 @@
+{
+  "dswp": {
+    "n_buzzes": 3686,
+    "buzz_type_counts": {
+      "A": 1346,
+      "?": 1198,
+      "B": 1142
+    },
+    "n_energy_individuals": 20,
+    "mean_individual_energy_MJ": {
+      "A": 1.2754630221287353,
+      "B": 9.069494397522456
+    },
+    "mean_individual_aoki_drag_energy_MJ": {
+      "A": 0.01307228084262739,
+      "B": 0.11124034997877447
+    },
+    "depth_mixed_model": {
+      "n": 2488,
+      "n_A": 1346,
+      "n_B": 1142,
+      "n_individuals": 20,
+      "n_deployments": 32,
+      "n_dives": 226,
+      "estimate_A_minus_B_m": 10.642366757027062,
+      "standard_error_m": 3.119344518973378,
+      "ci_low_m": 4.528563844466822,
+      "ci_high_m": 16.7561696695873,
+      "z_value": 3.4117317571993047,
+      "p_value": 0.0006455160162751171,
+      "whale_sd_m": 43.745802889544784,
+      "dive_sd_m": 82.30238612687816,
+      "residual_sd_m": 73.12461814681338,
+      "median_A_m": 698.4615124591888,
+      "median_B_m": 679.9492704919131,
+      "cohen_d": 0.13134549284309346,
+      "cliffs_delta": 0.07744162505237026,
+      "converged": true
+    },
+    "comeback_association": {
+      "legacy_manuscript": {
+        "n_deployments": 18,
+        "n_buzzes": 1691,
+        "pooled_odds_ratio": 1.1111190915149423,
+        "ci_low": 0.7765343667355468,
+        "ci_high": 1.5898660618448017,
+        "p_value": 0.5595676636390167,
+        "homogeneity_p_value": 0.041257412568448504
+      },
+      "current_classifier": {
+        "n_deployments": 18,
+        "n_buzzes": 1660,
+        "pooled_odds_ratio": 1.1507709578232503,
+        "ci_low": 0.8066890877160059,
+        "ci_high": 1.6416161040666641,
+        "p_value": 0.43267079310431233,
+        "homogeneity_p_value": 0.09637461696002836
+      }
+    }
+  },
+  "trajectory": {
+    "n_dives": 209,
+    "n_individuals": 20,
+    "mu_dive_median": 2.354319927821409,
+    "mu_individual_median": 2.3637478506352028,
+    "mu_pooled": 2.1546351941635398,
+    "alpha_dive_median": 1.909046391036953,
+    "fraction_superdiffusive": 1.0,
+    "alpha_short_le_1min_median": 1.9786544101226302,
+    "alpha_mid_1_5min_median": 1.7453575687539202,
+    "alpha_long_5_15min_median": 1.522357402317422,
+    "alpha_very_long_ge_15min_median": 1.777149676623098
+  },
+  "ceti2024": {
+    "n_buzzes": 336,
+    "buzz_type_counts": {
+      "A": 115,
+      "unclassified": 115,
+      "B": 106
+    }
+  },
+  "azores": {
+    "status": "external open-data retrieval; see data/azores/README.md"
+  }
+}

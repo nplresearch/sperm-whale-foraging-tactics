@@ -1,0 +1,13 @@
+{
+  "n_dives": 209,
+  "n_individuals": 20,
+  "mu_dive_median": 2.354319927821409,
+  "mu_individual_median": 2.3637478506352028,
+  "mu_pooled": 2.1546351941635398,
+  "alpha_dive_median": 1.909046391036953,
+  "fraction_superdiffusive": 1.0,
+  "alpha_short_le_1min_median": 1.9786544101226302,
+  "alpha_mid_1_5min_median": 1.7453575687539202,
+  "alpha_long_5_15min_median": 1.522357402317422,
+  "alpha_very_long_ge_15min_median": 1.777149676623098
+}
