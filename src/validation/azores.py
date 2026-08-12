@@ -115,6 +115,45 @@ def validate_azores_sources(directory: str | Path) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def find_azores_source_directory(
+    repository_root: str | Path,
+    *,
+    explicit: str | Path | None = None,
+) -> Path:
+    """Locate a complete, checksummed Azores source directory.
+
+    The public MATLAB inputs remain outside version control. An explicit path
+    is authoritative; otherwise, search the documented local-data directory
+    and the adjacent analysis checkout used to assemble this release.
+    """
+    repository_root = Path(repository_root).expanduser().resolve()
+    if explicit is not None:
+        source = Path(explicit).expanduser().resolve()
+        validate_azores_sources(source)
+        return source
+
+    candidates = (
+        repository_root / "local-data" / "azores",
+        repository_root.parent / "repo" / "Clean_notebooks_figures" / "Azores_code",
+    )
+    searched: list[Path] = []
+    for source in candidates:
+        source = source.resolve()
+        if source in searched:
+            continue
+        searched.append(source)
+        if all((source / filename).is_file() for filename in AZORES_FILES):
+            validate_azores_sources(source)
+            return source
+
+    locations = "\n".join(f"- {source}" for source in searched)
+    raise FileNotFoundError(
+        "Could not find a complete Azores source directory. Set "
+        "CETI_AZORES_SOURCE or place the four files in local-data/azores. "
+        f"Searched:\n{locations}"
+    )
+
+
 def _plain_value(value):
     """Convert MATLAB values without flattening scientific array fields."""
     if isinstance(value, np.ndarray) and value.ndim == 0:

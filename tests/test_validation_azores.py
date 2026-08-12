@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+import validation.azores as azores
 from validation.azores import (
     AZORES_FILES,
     CITATION,
@@ -13,6 +14,7 @@ from validation.azores import (
     _transition_counts,
     classify_balanced_assignment,
     classify_nearest_corners,
+    find_azores_source_directory,
     source_manifest,
     validate_azores_sources,
 )
@@ -40,6 +42,33 @@ def test_azores_validator_rejects_unreviewed_bytes(tmp_path):
         assert hashlib.sha256(path.read_bytes()).hexdigest() != metadata["sha256"]
     with pytest.raises(ValueError, match="Dryad source mismatch"):
         validate_azores_sources(tmp_path)
+
+
+def test_azores_source_finder_uses_and_validates_explicit_directory(
+    tmp_path, monkeypatch
+):
+    source = tmp_path / "open-azores-data"
+    source.mkdir()
+    for filename in AZORES_FILES:
+        (source / filename).touch()
+    validated = []
+    monkeypatch.setattr(azores, "validate_azores_sources", validated.append)
+
+    found = find_azores_source_directory(tmp_path / "repository", explicit=source)
+
+    assert found == source.resolve()
+    assert validated == [source.resolve()]
+
+
+def test_azores_source_finder_reports_all_default_locations(tmp_path):
+    repository = tmp_path / "production"
+    repository.mkdir()
+
+    with pytest.raises(FileNotFoundError, match="CETI_AZORES_SOURCE") as error:
+        find_azores_source_directory(repository)
+
+    assert str(repository / "local-data" / "azores") in str(error.value)
+    assert "Clean_notebooks_figures/Azores_code" in str(error.value)
 
 
 def test_nearest_corner_overlap_is_explicit_not_silently_balanced():

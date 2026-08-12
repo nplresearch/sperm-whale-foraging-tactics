@@ -4,9 +4,16 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import pandas as pd
+import pytest
 
 from dswp.classification import attach_labels
-from dswp.manuscript_figures import dswp_component_figure, dswp_model_selection_figure, comeback_alternatives
+from dswp.manuscript_figures import (
+    comeback_alternatives,
+    dswp_component_figure,
+    dswp_model_selection_figure,
+    dswp_sequence_manuscript_figure,
+    dswp_tactics_manuscript_figure,
+)
 from validation.azores import run_azores_validation
 from validation.manuscript_figures import azores_manuscript_figure, ceti2024_manuscript_figure
 
@@ -39,6 +46,43 @@ def test_dswp_manuscript_adapters_return_figures():
     model_figure, tables = dswp_model_selection_figure(events)
     assert model_figure.axes and not tables["selection"].empty
     figure.clf(); model_figure.clf()
+
+
+def test_dswp_manuscript_layouts_reproduce_registered_panels():
+    events = attach_labels(pd.read_csv(ROOT / "data/dswp/buzz_events.csv"))
+    roll = pd.read_csv(ROOT / "data/dswp/roll_speed_bins.csv")
+    energy = pd.read_csv(ROOT / "results/dswp/buzz_energy.csv")
+    straightness = pd.read_csv(ROOT / "results/dswp/buzz_straightness.csv")
+    transitions = pd.read_csv(ROOT / "results/dswp/buzz_markov_transitions.csv")
+
+    tactics, tactics_tables = dswp_tactics_manuscript_figure(
+        events,
+        roll_bins=roll,
+        energy_events=energy,
+        trajectory_index_path=ROOT / "data/dswp/trajectory_index.csv",
+    )
+    sequence, sequence_tables = dswp_sequence_manuscript_figure(
+        events,
+        straightness=straightness,
+        transitions=transitions,
+    )
+
+    assert tactics_tables["trajectory"] == {
+        "trajectory_id": "T127",
+        "centre_buzz_order": 15,
+        "duration_s": 100.0,
+    }
+    assert tactics_tables["individual_counts"].shape == (20, 2)
+    assert tactics_tables["geometry_test"]["n"] == 2488
+    assert sequence_tables["straightness_before"]["n_A"] == 1346
+    assert sequence_tables["straightness_after"]["p_value"] == pytest.approx(
+        0.3998199,
+        rel=1e-5,
+    )
+    assert len(tactics.axes) >= 7
+    assert len(sequence.axes) >= 5
+    tactics.clf()
+    sequence.clf()
 
 
 def test_comeback_audit_keeps_current_and_legacy_alternatives():
