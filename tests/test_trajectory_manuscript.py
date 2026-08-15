@@ -6,6 +6,7 @@ from trajectory.manuscript import (
     buzz_centred_msd_by_type,
     buzz_centred_results,
     phase_summary,
+    plot_buzz_centred_displacement,
     representative_path,
 )
 
@@ -55,6 +56,7 @@ def test_buzz_centred_results_use_onset_reference_and_paired_individuals(tmp_pat
     assert result["n_individuals"] == 5
     assert not result["paired_tests"].empty
     assert set(result["curves"].buzz_type) == {"A", "B"}
+    assert "wilcoxon_p_bonferroni" in result["paired_tests"]
 
 
 def test_release_reproduces_legacy_buzz_msd_and_exposes_corrected_result():
@@ -84,4 +86,12 @@ def test_release_reproduces_legacy_buzz_msd_and_exposes_corrected_result():
     assert corrected_time_legacy_labels["n_individuals"] == 19
     assert corrected_time_legacy_labels["paired_tests"]["wilcoxon_p"].max() < 0.001
     assert corrected["n_individuals"] == 20
-    assert corrected["paired_tests"]["wilcoxon_p"].max() < 0.001
+    assert corrected["retained_buzz_counts"] == {"A": 1346, "B": 1141}
+    assert corrected["paired_tests"]["wilcoxon_p_bonferroni"].max() < 0.001
+    assert corrected["paired_tests"]["n_B_gt_A"].min() == 19
+    assert corrected["paired_tests"].loc[
+        corrected["paired_tests"]["lag_s"] >= 1, "n_B_gt_A"
+    ].eq(20).all()
+    axes = plot_buzz_centred_displacement(corrected)
+    assert len(axes) == 2
+    axes[0].figure.clf()

@@ -1,9 +1,41 @@
 # Submission reconciliation: manuscript, code, and data
 
-Status: updated 2026-08-11. This checklist is intended for the revision made after the
+Status: updated 2026-08-15. This checklist is intended for the revision made after the
 preprint has been online for a short period. It distinguishes checks that could
 change reported results from release and documentation work. The preprint
 snapshot can remain fixed while these checks are run.
+
+## Numbered remaining-issue index
+
+1. **Azores manuscript alignment:** choose the operative classification and
+   window definitions and regenerate corrected sequence intervals.
+2. **Comeback analysis:** choose one recurrence definition and classifier.
+3. **Terminal-buzz count:** reconcile the event definition and type counts.
+4. **CETI roll panel:** release a safe derived input, label it legacy, or remove
+   the panel.
+5. **Buzz-centred release hygiene:** commit the corrected implementation and
+   outputs and retire or clearly mark the obsolete null-result notebook.
+6. **Trajectory/L\'evy output freeze:** rerun and checksum the corrected
+   trajectory statistics and figures; the fitter wording itself is resolved.
+7. **Trajectory-reconstruction freeze:** regenerate the reviewed comparison
+   output and retain the correct 219-m aggregation wording.
+8. **DSWP Markov/pause freeze:** freeze the ten-deployment, gap-preserving
+   Markov outputs and resolve pause quantities consistently with issue 3.
+9. **Data-steward approval:** approve every derived release input and rerun the
+   safety audit.
+10. **Map reproducibility boundary:** document or release the permissible map
+    inputs without exposing protected locations or identifiers.
+11. **Manuscript-artifact crosswalk:** bind every claim and figure to frozen
+    code, inputs, checksums and tolerances.
+12. **Bibliography cleanup:** repair the remaining style/metadata warnings.
+
+The corrected buzz-centred scientific result, the custom L\'evy fitter Methods
+description, the plateau-threshold diagnostic, the classifier-speed provenance,
+the energetic-model alignment and the DSWP Markov resampling description are
+resolved; only their explicitly listed release-freeze tasks remain open. For the plateau diagnostic, the
+Methods and Supplementary Fig. S10 now identify 0.7 as a robust operating point
+rather than a unique optimum and report the deterministic sweep values; the
+production boundaries are unchanged.
 
 ## A. Result-affecting gates
 
@@ -35,7 +67,7 @@ or choose the balanced sensitivity, describe the implemented buzz-window
 definition, and regenerate Markov intervals from the duplicate-preserving dive
 bootstrap. Do not combine the operative P values with balanced 29/29 wording.
 
-### 1b. Correct the buzz-centred MSD time origin and refreeze the claim
+### 1b. Correct the buzz-centred displacement time origin and refreeze the claim (resolved)
 
 **Why this is substantial.** The SI's eight-whale null result is reproduced
 only when the legacy notebook subtracts `dive_start` from click times that are
@@ -48,12 +80,18 @@ every tested positive lag.
 forensic and corrected paths separately. The public regression test reproduces
 all archived eight-whale P values exactly.
 
-**Pass condition.** Select one classifier version, rerun the corrected
-`+-30 s` analysis, and update or remove the current claim that buzz-centred MSD
-does not distinguish tactics. Correcting time while retaining archived labels
-already yields the significant result, so changing classifier versions cannot
-rescue the legacy conclusion. The double-subtraction path may be retained only
-as provenance, not as the scientific robustness result.
+**Resolution.** The registered GMM and dive-local time origin are now frozen as
+the manuscript-facing path. The corrected `+-30 s` analysis retains 20 whales,
+1,346 Type A windows, and 1,141 Type B windows. Type B exceeds Type A at all
+eight tested positive lags, with all paired Wilcoxon P values below 0.001 after
+Bonferroni correction. Corrected tables and figures are pipeline outputs; the
+double-subtraction path remains only as provenance and a regression test.
+
+**Release hygiene still required.** Before the public repository is frozen,
+commit the corrected implementation, regression test, tables and figure
+together. The exploratory Lévy notebook that generated the obsolete null result
+must either be updated or clearly marked as legacy and non-manuscript-producing,
+so that it cannot accidentally regenerate or be cited as the operative analysis.
 
 ### 2. Choose and register one comeback definition
 
@@ -136,9 +174,29 @@ deterministic generator. The validation remains limited to 231 kinematic
 buzzes from 10 tags/19 dives and 149 heading-resolved buzzes from five tags,
 without demographic, prey-field or full-GMM claims.
 
+### 5b. Resolve classifier-speed provenance (resolved)
+
+The primary GMM retains the original constant-speed-derived buzz-average 3-D
+speed and therefore preserves the reported A/B/unassigned counts and all
+downstream figures and tests. The Methods and SI now state this provenance
+explicitly and distinguish the classifier input from the pitch-adaptive
+trajectories used for trajectory-scale and energetic analyses.
+
+An otherwise identical pitch-adaptive-speed refit gives 1,350 A, 1,176 B and
+1,160 unassigned events, compared with 1,346 A, 1,142 B and 1,198 unassigned
+under the primary classifier. No event confidently assigned by both versions
+switches directly between A and B; only posterior-boundary membership changes.
+`results/dswp/classifier_speed_sensitivity.json` and the registered regression
+test freeze the exact comparison. No downstream result was silently combined
+across classifier versions.
+
 ## B. Important numerical and methodological confirmations
 
 ### 6. Freeze the trajectory and Lévy-like outputs
+
+The manuscript Methods already describe the operative custom 30-candidate
+cut-off sweep and retain the cautious term “Lévy-like.” This remaining item is
+only the clean rerun, numerical comparison and artifact freeze.
 
 Run `trajectory.analysis.analyze_release` on float64 reconstructed paths and
 compare:
@@ -221,9 +279,10 @@ fresh build produces no missing-field or unsupported-entry warnings.
 
 ## Recommended execution order
 
-1. Buzz-centred MSD correction and comeback-definition decision.
-2. Azores manuscript-choice alignment and corrected Markov intervals.
-3. Terminal-count reconciliation and CETI roll-panel decision.
-4. Energetic-model, trajectory/Lévy, reconstruction, and Markov clean reruns.
-5. Steward review and release-safety audit.
-6. Bibliography cleanup, final manuscript–artifact crosswalk, and version freeze.
+1. Issues 2 and 1: comeback definition, then Azores manuscript alignment.
+2. Issues 3 and 4: terminal-count reconciliation and CETI roll-panel decision.
+3. Issues 5--8: buzz-centred, trajectory/L\'evy, reconstruction and Markov
+   release freezes.
+4. Issues 9--10: steward review, safety audit and map boundary.
+5. Issues 12 and 11: bibliography cleanup, final manuscript--artifact crosswalk
+   and version freeze.

@@ -4,6 +4,25 @@ This file records discrepancies found while making the result-producing code
 independent of the private analysis environment. They should be resolved
 explicitly before the repository and manuscript are released together.
 
+## Numbered active-issue index
+
+The remaining manuscript-facing issues in this file are:
+
+1. **“Total duration” diagnostic feature:** align the pair-plot label with the
+   implemented ramp-plus-plateau duration, or rerun it using full buzz duration.
+2. **Reconstruction-error wording:** report 219 m as the mean of deployment-
+   level median errors and avoid claiming a unique most-frequent winner.
+3. **Spatial recurrence/comeback analysis:** choose one recurrence definition
+   and classifier version and regenerate the associated prose and figures.
+4. **Terminal-buzz count:** reconcile 36 events (32 B/4 A) with the released
+   table's 32 events (29 B/3 A).
+5. **Azores validation alignment:** resolve the operative 29/28/1 split,
+   buzz-window definition and corrected sequence-bootstrap intervals.
+
+Resolved items remain below for provenance. Release-only tasks, including the
+CETI roll panel, steward approval, artifact crosswalk and version freeze, are
+numbered separately in `submission_reconciliation.md`.
+
 ## Notebook touchpoint index
 
 Unresolved choices are surfaced in the notebooks that they can change:
@@ -11,8 +30,8 @@ Unresolved choices are surfaced in the notebooks that they can change:
 - `dswp/00_dataset_and_buzz_construction.ipynb`: the boundary between derived
   click-time reproduction and unavailable raw-audio/full-record processing;
 - `trajectory/02_manuscript_trajectory_figures.ipynb`: reconstruction-error
-  wording, location-bearing maps, the named Levy-like fitter, and the legacy
-  buzz-centred time-origin/classifier path;
+  wording and location-bearing maps; the resolved L\'evy-fitting and legacy
+  buzz-centred paths remain visible there as provenance and regression checks;
 - `dswp/03_manuscript_figure_components.ipynb`: classifier speed, diagnostic
   duration, DSWP Markov resampling, and terminal-buzz denominator;
 - `dswp/04_comeback_reproduction_audit.ipynb`: recurrence thresholds and
@@ -28,7 +47,7 @@ Unresolved choices are surfaced in the notebooks that they can change:
 Every affected notebook uses the phrase `Known issue touchpoint` so these
 dependencies can be found mechanically before release.
 
-## Plateau-threshold null diagnostic
+## Plateau-threshold null diagnostic (resolved)
 
 The released click times reproduce the operative 0.3-s symmetric rate window,
 0.05-s step, five-point smoothing, and 0.05--0.95 threshold sweep. At the
@@ -43,10 +62,13 @@ tree contains no preserved threshold-figure code or random seed that explains
 a unique 0.7 maximum. The derivative criterion is likewise descriptive rather
 than a registered change-point rule.
 
-The SI should report 0.7 as a robust, preselected operating point rather than a
-unique optimum, or archive the exact randomization and formal selection rule
-used for the plotted claim. The dataset/buzz-construction notebook keeps this
-diagnostic visible and does not change the production boundaries.
+The manuscript Methods and Supplementary Fig. S10 caption now report 0.7 as a
+robust operating point rather than a unique numerical optimum. They state the
+deterministic diagnostic values explicitly: excess regularity is 0.3027 at
+alpha 0.70, or 99.2% of the maximum value of 0.3052 at alpha 0.55, while the
+median plateau ICI CV at alpha 0.70 remains 0.12. The
+dataset/buzz-construction notebook retains the full sensitivity diagnostic and
+does not change the production boundaries.
 
 ## Energetic-model alignment (resolved)
 
@@ -84,19 +106,27 @@ This item is resolved. Future edits should preserve the current distinction
 between the manuscript's trajectory-driven model and the cited source
 frameworks.
 
-## Classifier speed variable
+## Classifier speed variable (resolved)
 
-The reported GMM counts (A = 1,346; B = 1,142; ambiguous = 1,198) are reproduced
-using the original constant-speed reconstruction summary
-`avg_speed_3d_m_s`. The selected pitch-adaptive speed is released separately as
-`pitch_adaptive_speed_3d_m_s`. Switching the classifier to the latter leaves
-the classified A/B contrast unchanged for shared confident cases but changes
-which observations fall near the posterior-probability boundary.
+The reported GMM counts (A = 1,346; B = 1,142; unassigned = 1,198) are reproduced
+using the original constant-speed reconstruction summary `avg_speed_3d_m_s`.
+The manuscript Methods, main Fig. 2 caption and Supplementary Information now
+identify this variable explicitly and distinguish it from the selected
+pitch-adaptive speed, `pitch_adaptive_speed_3d_m_s`, used for the trajectory-
+scale and energetic analyses.
 
-The Methods should state which speed is used for classification, or the
-classifier should be rerun on pitch-adaptive speed and its counts and downstream
-figures updated. The repository keeps the published-count implementation as the
-default and names both variables explicitly.
+The SI reports an otherwise identical GMM refit using pitch-adaptive speed. It
+yields A = 1,350, B = 1,176 and unassigned = 1,160. Among the 2,417 events
+confidently classified by both versions, 1,306 remain A and 1,111 remain B;
+none switches directly between A and B. The differences are confined to the
+posterior boundary: 71 primary confident events become unassigned and 109
+primary unassigned events become confident under the pitch-adaptive refit.
+
+The repository retains the original result-producing classifier as the default,
+exports `results/dswp/classifier_speed_sensitivity.json`, and regression-tests
+both counts and boundary movements. Downstream manuscript values continue to
+use the original classifier. This item is resolved as a transparent provenance
+choice supported by an explicit reconstruction-sensitivity analysis.
 
 ## “Total duration” diagnostic feature
 
@@ -182,7 +212,7 @@ The repository retains both association outputs. The legacy labels are kept in
 a separate, clearly named table solely for forensic reproduction of the
 current manuscript figure.
 
-## Markov graph: gaps and resampling unit
+## Markov graph: gaps and resampling unit (resolved in the manuscript)
 
 The published graph is exactly recovered only when ambiguous buzzes remain in
 the ordered sequence as gaps. Transitions touching an ambiguous event are
@@ -191,15 +221,15 @@ transition. This gives the reported point probabilities, including
 Start→A/B of approximately 0.46/0.54 and A/B→End of approximately 0.06/0.13.
 
 The result-producing notebook computes 200 leave-subset-out resamples after
-removing ten `tag_id` values (deployments) per iteration. The current Methods
-instead state that 5--10 individuals are excluded. These are not equivalent.
-The repository implements the notebook procedure as the figure-reproduction
-default and exposes the grouping and exclusion range as arguments. Before
-release, either:
-
-1. revise the Methods to say ten deployments and retain the current figure; or
-2. select and preregister an individual-level procedure, regenerate the graph,
-   and update every reported standard deviation.
+removing ten `tag_id` values (deployments) per iteration. An earlier Methods
+draft instead stated that 5--10 individuals were excluded; these procedures are
+not equivalent because deployments and individuals have different sampling
+weights. The current manuscript now follows the figure-producing procedure: it
+states that ten deployments are excluded in each of 200 iterations and that
+ambiguous events are preserved as gaps. The repository uses this deployment-
+level procedure as the figure-reproduction default and retains the grouping and
+exclusion range as explicit arguments for sensitivity analyses. Before public
+release, commit this implementation and its frozen Markov outputs together.
 
 ## Terminal-buzz count
 
@@ -268,40 +298,45 @@ The following manuscript discrepancies remain and should not be glossed over:
    events per corner are tested, whereas the executable loop uses 20, 25, and
    29. The public result table records the values actually run by the code.
 
-## Lévy fitter named in Methods
+## L\'evy fitter named in Methods (resolved)
 
 The reported step-length exponents are reproduced by the result-producing
 custom implementation: a continuous maximum-likelihood exponent is evaluated
 at 30 candidate lower cutoffs spanning the 5th--80th percentiles, and the
-cutoff minimizing the Kolmogorov--Smirnov distance is selected. The current
-Methods instead say that fitting used the Python `powerlaw` package. That
-package's unrestricted cutoff search is not the operative implementation and
-need not return identical values.
+cutoff minimizing the Kolmogorov--Smirnov distance is selected.
 
-Retain the cautious term “Lévy-like,” as intended, but either describe the
-actual 30-candidate implementation in Methods or rerun the analysis with a
-pinned `powerlaw` version and update the numerical results. No additional
-lognormal-versus-power-law claim is required.
+The current Methods now describe this custom 30-candidate sweep directly and
+retain the cautious term “L\'evy-like,” without claiming a unique or optimal
+search rule or adding a lognormal-versus-power-law claim. The Python `powerlaw`
+package is no longer presented as the operative fitter. This item is resolved;
+the clean output-and-figure freeze remains a release task in
+`submission_reconciliation.md`.
 
-## Buzz-centred MSD time origin and labels
+## Buzz-centred displacement time origin and labels (resolved)
 
-The manuscript-producing Lévy notebook subtracts `dive_start` from each buzz
-click time before indexing a dive-local trajectory. The buzz times are already
-dive-local. This second subtraction makes most later dives negative and drops
-them at the `+-30 s` boundary check. Combined with the archived A/B labels, the
-buggy path leaves eight whales and reproduces the saved all-nonsignificant
-Wilcoxon table used by the current SI.
+The former manuscript-producing Lévy notebook subtracted `dive_start` from each
+buzz click time before indexing a dive-local trajectory. The buzz times were
+already dive-local. This second subtraction made most later dives negative and
+dropped them at the `+-30 s` boundary check. Combined with the archived A/B
+labels, the buggy path left eight whales and reproduced the saved
+all-nonsignificant Wilcoxon table used by the previous SI.
 
 Using the released dive-local buzz time directly while retaining the archived
 labels keeps 19 whales and gives P values below 0.001 at every tested positive
 lag. Reapplying the registered current GMM keeps 20 whales and gives the same
 qualitative result. This isolates the time-origin error, rather than the label
-version, as the cause of the archived null result and is incompatible with the
-current statement that buzz-centred MSD does not distinguish tactics.
+version, as the cause of the archived null result. It was incompatible with the
+previous statement that buzz-centred MSD did not distinguish tactics.
 
-`trajectory.manuscript.buzz_centred_results` therefore exposes two named paths:
-`dive_local` is the corrected default, while `legacy_subtract_dive_start` is a
-forensic reproduction mode. Before submission, the buzz-centred analysis and
-claim should be rerun with the corrected time origin and one explicitly chosen
-classifier version; the legacy null result should not be presented as a
-robustness check of the registered analysis.
+The manuscript-facing analysis now uses `dive_local` with the registered GMM.
+It retains 20 whales and 1,346 Type A plus 1,141 Type B complete `+-30 s`
+windows. Type B onset-referenced squared displacement exceeds Type A at all
+eight tested positive lags from 0.04 to 30 s; all paired Wilcoxon tests remain
+below 0.001 after Bonferroni correction. The result is interpreted as a
+trajectory-scale expression of the established speed contrast, not as an
+independent validation because buzz-period speed contributes to classification.
+
+`legacy_subtract_dive_start` remains an explicitly named forensic mode, and the
+regression test preserves the archived eight-whale P values to document the
+error. It must not be used to generate manuscript figures or scientific claims.
+This item is resolved.

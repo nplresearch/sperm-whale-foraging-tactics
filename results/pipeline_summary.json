@@ -6,6 +6,26 @@
       "?": 1198,
       "B": 1142
     },
+    "classifier_speed_sensitivity": {
+      "primary_speed_variable": "avg_speed_3d_m_s",
+      "alternative_speed_variable": "pitch_adaptive_speed_3d_m_s",
+      "primary_counts": {
+        "A": 1346,
+        "B": 1142,
+        "?": 1198
+      },
+      "pitch_adaptive_counts": {
+        "A": 1350,
+        "B": 1176,
+        "?": 1160
+      },
+      "shared_confident": 2417,
+      "shared_confident_A_to_B_or_B_to_A": 0,
+      "primary_confident_to_unassigned": 71,
+      "primary_unassigned_to_pitch_adaptive_confident": 109,
+      "shared_confident_A": 1306,
+      "shared_confident_B": 1111
+    },
     "n_energy_individuals": 20,
     "mean_individual_energy_MJ": {
       "A": 1.2754630221287353,
@@ -69,7 +89,18 @@
     "alpha_short_le_1min_median": 1.9786544101226302,
     "alpha_mid_1_5min_median": 1.7453575687539202,
     "alpha_long_5_15min_median": 1.522357402317422,
-    "alpha_very_long_ge_15min_median": 1.777149676623098
+    "alpha_very_long_ge_15min_median": 1.777149676623098,
+    "buzz_centred_displacement": {
+      "n_individuals": 20,
+      "retained_buzz_counts": {
+        "A": 1346,
+        "B": 1141
+      },
+      "minimum_per_type": 5,
+      "window_s": 30,
+      "label_provenance": "registered_gmm",
+      "time_origin": "dive_local"
+    }
   },
   "ceti2024": {
     "n_buzzes": 336,

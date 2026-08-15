@@ -8,6 +8,10 @@ source tables are written under `results/` or are the checksummed inputs under
 Rendered figures may be version-controlled for convenient comparison, but the
 code and numerical result tables are authoritative.
 
+The trajectory outputs include the corrected buzz-centred squared-displacement
+figure based on dive-local buzz times and registered GMM labels. The legacy
+eight-whale null figure is forensic provenance and is not pipeline-generated.
+
 The current pipeline does not claim pixel-identical recomposition of the final
 multi-panel manuscript artwork, the location-bearing regional map, or CETI path
 panels whose reconstructed trajectories have not been approved for release.

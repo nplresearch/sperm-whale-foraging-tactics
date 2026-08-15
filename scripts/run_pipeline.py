@@ -24,6 +24,7 @@ from dswp.aoki import (  # noqa: E402
 )
 from dswp.classification import (  # noqa: E402
     classifier_robustness,
+    classifier_speed_sensitivity,
     gmm_model_selection,
 )
 from dswp.comebacks import (  # noqa: E402
@@ -60,6 +61,10 @@ from dswp.statistics import (  # noqa: E402
 from dswp.trajectory_features import buzz_straightness  # noqa: E402
 from trajectory.analysis import analyze_release  # noqa: E402
 from trajectory.figures import plot_mu_distribution, plot_timescale_msd  # noqa: E402
+from trajectory.manuscript import (  # noqa: E402
+    buzz_centred_results,
+    plot_buzz_centred_displacement,
+)
 from validation.ceti2024 import run_ceti2024_validation  # noqa: E402
 
 
@@ -110,6 +115,10 @@ def main() -> int:
     )
     robustness_matrix.to_csv(
         dswp_results / "classifier_robustness_confusion.csv", index=False
+    )
+    speed_sensitivity = classifier_speed_sensitivity(events)
+    (dswp_results / "classifier_speed_sensitivity.json").write_text(
+        json.dumps(speed_sensitivity, indent=2) + "\n"
     )
     reconstruction_errors = pd.read_csv(
         data / "dswp" / "reconstruction_error_summary.csv"
@@ -316,6 +325,37 @@ def main() -> int:
         plot_timescale_msd(timescale),
         trajectory_figures / "timescale_msd",
     )
+    buzz_displacement = buzz_centred_results(
+        events,
+        data / "dswp" / "trajectory_index.csv",
+        time_origin="dive_local",
+        window_s=30,
+        minimum_per_type=5,
+    )
+    buzz_displacement["curves"].to_csv(
+        trajectory_results / "buzz_centred_displacement_curves.csv", index=False
+    )
+    buzz_displacement["paired_tests"].to_csv(
+        trajectory_results / "buzz_centred_displacement_tests.csv", index=False
+    )
+    buzz_displacement_summary = {
+        key: buzz_displacement[key]
+        for key in (
+            "n_individuals",
+            "retained_buzz_counts",
+            "minimum_per_type",
+            "window_s",
+            "label_provenance",
+            "time_origin",
+        )
+    }
+    (trajectory_results / "buzz_centred_displacement_summary.json").write_text(
+        json.dumps(buzz_displacement_summary, indent=2) + "\n"
+    )
+    save_figure(
+        plot_buzz_centred_displacement(buzz_displacement)[0],
+        trajectory_figures / "buzz_centred_displacement",
+    )
 
     # Independent preliminary CETI 2024 validation. Azores is intentionally a
     # documented external-data retrieval step rather than an implicit download.
@@ -334,6 +374,7 @@ def main() -> int:
                 str(key): int(value)
                 for key, value in events["buzz_type"].value_counts().items()
             },
+            "classifier_speed_sensitivity": speed_sensitivity,
             "n_energy_individuals": int(len(paired_energy)),
             "mean_individual_energy_MJ": energy_means_mj,
             "mean_individual_aoki_drag_energy_MJ": (
@@ -342,7 +383,10 @@ def main() -> int:
             "depth_mixed_model": depth_model,
             "comeback_association": comeback_summaries,
         },
-        "trajectory": trajectory_summary,
+        "trajectory": {
+            **trajectory_summary,
+            "buzz_centred_displacement": buzz_displacement_summary,
+        },
         "ceti2024": {
             "n_buzzes": int(len(ceti_results["labels"])),
             "buzz_type_counts": {

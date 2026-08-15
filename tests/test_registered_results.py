@@ -11,6 +11,7 @@ from dswp.aoki import (
 from dswp.classification import (
     attach_labels,
     classifier_robustness,
+    classifier_speed_sensitivity,
     classify_gmm,
     gmm_model_selection,
 )
@@ -38,6 +39,23 @@ def test_dswp_classifier_counts():
         "?": 1198,
         "B": 1142,
     }
+
+
+def test_classifier_speed_sensitivity():
+    events = load_buzz_events(ROOT / "data/dswp/buzz_events.csv")
+    result = classifier_speed_sensitivity(events)
+    assert result["primary_counts"] == {"A": 1346, "B": 1142, "?": 1198}
+    assert result["pitch_adaptive_counts"] == {
+        "A": 1350,
+        "B": 1176,
+        "?": 1160,
+    }
+    assert result["shared_confident"] == 2417
+    assert result["shared_confident_A"] == 1306
+    assert result["shared_confident_B"] == 1111
+    assert result["shared_confident_A_to_B_or_B_to_A"] == 0
+    assert result["primary_confident_to_unassigned"] == 71
+    assert result["primary_unassigned_to_pitch_adaptive_confident"] == 109
 
 
 def test_gmm_model_selection_minima():

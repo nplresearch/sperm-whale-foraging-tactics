@@ -4,6 +4,10 @@ import pandas as pd
 from scipy.stats import rankdata
 
 FEATURES = ("ramp_up_duration_s", "avg_speed_3d_m_s")
+PITCH_ADAPTIVE_FEATURES = (
+    "ramp_up_duration_s",
+    "pitch_adaptive_speed_3d_m_s",
+)
 MODEL_SELECTION_FEATURES = {
     "ramp_up_vs_3d_speed": (
         "ramp_up_duration_s",
@@ -62,6 +66,44 @@ def classify_gmm_hard(
         probability_threshold=0.0,
         random_state=random_state,
     )
+
+
+def classifier_speed_sensitivity(frame: pd.DataFrame) -> dict:
+    """Compare the registered GMM with a pitch-adaptive-speed refit.
+
+    The primary labels reproduce the manuscript counts using the original
+    constant-speed-derived 3-D speed summary. The alternative changes only the
+    speed column and retains the transform, GMM, seed, and posterior threshold.
+    """
+    primary = classify_gmm(frame)
+    pitch_adaptive = classify_gmm(frame, features=PITCH_ADAPTIVE_FEATURES)
+    shared_confident = primary.isin(["A", "B"]) & pitch_adaptive.isin(["A", "B"])
+
+    def counts(labels: pd.Series) -> dict[str, int]:
+        return {label: int(labels.eq(label).sum()) for label in ("A", "B", "?")}
+
+    return {
+        "primary_speed_variable": FEATURES[1],
+        "alternative_speed_variable": PITCH_ADAPTIVE_FEATURES[1],
+        "primary_counts": counts(primary),
+        "pitch_adaptive_counts": counts(pitch_adaptive),
+        "shared_confident": int(shared_confident.sum()),
+        "shared_confident_A_to_B_or_B_to_A": int(
+            primary.loc[shared_confident].ne(pitch_adaptive.loc[shared_confident]).sum()
+        ),
+        "primary_confident_to_unassigned": int(
+            (primary.isin(["A", "B"]) & pitch_adaptive.eq("?")).sum()
+        ),
+        "primary_unassigned_to_pitch_adaptive_confident": int(
+            (primary.eq("?") & pitch_adaptive.isin(["A", "B"])).sum()
+        ),
+        "shared_confident_A": int(
+            (shared_confident & primary.eq("A") & pitch_adaptive.eq("A")).sum()
+        ),
+        "shared_confident_B": int(
+            (shared_confident & primary.eq("B") & pitch_adaptive.eq("B")).sum()
+        ),
+    }
 
 
 def classify_extreme_corners(frame: pd.DataFrame, *, features=FEATURES, n_per_class=None) -> pd.Series:

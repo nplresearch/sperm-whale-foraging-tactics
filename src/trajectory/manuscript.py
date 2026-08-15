@@ -156,6 +156,19 @@ def buzz_centred_msd_by_type(
     return {"supported": True, "events": labelled, "label_provenance": provenance}
 
 
+def _paired_rank_biserial(differences: np.ndarray) -> float:
+    """Return the signed-rank effect size, positive when Type B is larger."""
+    differences = np.asarray(differences, dtype=float)
+    differences = differences[np.isfinite(differences) & ~np.isclose(differences, 0)]
+    if not len(differences):
+        return 0.0
+    ranks = stats.rankdata(np.abs(differences))
+    return float(
+        (ranks[differences > 0].sum() - ranks[differences < 0].sum())
+        / ranks.sum()
+    )
+
+
 def buzz_centred_results(
     events: pd.DataFrame,
     index_csv: str | Path,
@@ -260,6 +273,9 @@ def buzz_centred_results(
             continue
         a_values = np.asarray([curves[w]["A"][half_window + lag] for w in retained])
         b_values = np.asarray([curves[w]["B"][half_window + lag] for w in retained])
+        differences = b_values - a_values
+        median_a = float(np.median(a_values))
+        median_b = float(np.median(b_values))
         p_value = (
             1.0
             if np.allclose(a_values, b_values)
@@ -268,22 +284,117 @@ def buzz_centred_results(
         test_rows.append(
             {
                 "lag_s": float(lag / fs_hz),
-                "median_A_m2": float(np.median(a_values)),
-                "median_B_m2": float(np.median(b_values)),
+                "median_A_m2": median_a,
+                "median_B_m2": median_b,
+                "median_paired_B_minus_A_m2": float(np.median(differences)),
+                "median_B_over_A": median_b / median_a if median_a else np.nan,
+                "n_B_gt_A": int(np.count_nonzero(differences > 0)),
+                "rank_biserial_B_gt_A": _paired_rank_biserial(differences),
                 "wilcoxon_p": p_value,
                 "n_pairs": len(retained),
             }
         )
+    paired_tests = pd.DataFrame(test_rows)
+    if not paired_tests.empty:
+        paired_tests["wilcoxon_p_bonferroni"] = np.minimum(
+            1.0, paired_tests["wilcoxon_p"] * len(paired_tests)
+        )
+    retained_buzz_counts = {
+        buzz_type: int(
+            sum(len(per_individual[individual_id][buzz_type]) for individual_id in retained)
+        )
+        for buzz_type in ("A", "B")
+    }
     return {
         "supported": True,
         "curves": pd.DataFrame(curve_rows),
-        "paired_tests": pd.DataFrame(test_rows),
+        "paired_tests": paired_tests,
         "n_individuals": len(retained),
+        "retained_buzz_counts": retained_buzz_counts,
         "minimum_per_type": minimum_per_type,
         "window_s": window_s,
         "label_provenance": labelled["label_provenance"],
         "time_origin": time_origin,
     }
+
+
+def plot_buzz_centred_displacement(result: dict):
+    """Plot the corrected manuscript-facing buzz-centred displacement result."""
+    curves = result["curves"]
+    tests = result["paired_tests"]
+    if curves.empty or tests.empty:
+        raise ValueError("buzz-centred displacement result is empty")
+
+    colors = {"A": "#2A92D5", "B": "#D56D2A"}
+    figure, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
+    for buzz_type in ("A", "B"):
+        selected = curves.loc[curves["buzz_type"].eq(buzz_type)]
+        for _, group in selected.groupby("individual_id"):
+            axes[0].plot(
+                group["lag_s"],
+                group["msd_m2"],
+                color=colors[buzz_type],
+                alpha=0.14,
+                linewidth=0.6,
+            )
+        median = selected.groupby("lag_s")["msd_m2"].median()
+        axes[0].plot(
+            median.index,
+            median,
+            color=colors[buzz_type],
+            linewidth=2.4,
+            label=f"Type {buzz_type} median (N={result['n_individuals']} whales)",
+        )
+    axes[0].axvline(0, color="0.3", linewidth=0.8)
+    axes[0].set(
+        xlabel="Lag from buzz onset (s)",
+        ylabel="Onset-referenced squared displacement (m$^2$)",
+        title="(a) Per-whale curves and across-whale medians",
+    )
+    axes[0].legend(frameon=False, fontsize=8)
+
+    axes[1].plot(
+        tests["lag_s"],
+        tests["median_A_m2"],
+        "o-",
+        color=colors["A"],
+        label="Type A median",
+    )
+    axes[1].plot(
+        tests["lag_s"],
+        tests["median_B_m2"],
+        "s-",
+        color=colors["B"],
+        label="Type B median",
+    )
+    for row in tests.itertuples(index=False):
+        p_value = row.wilcoxon_p_bonferroni
+        if p_value < 0.001:
+            marker = "***"
+        elif p_value < 0.01:
+            marker = "**"
+        elif p_value < 0.05:
+            marker = "*"
+        else:
+            marker = ""
+        if marker:
+            axes[1].annotate(
+                marker,
+                (row.lag_s, row.median_B_m2 * 1.16),
+                ha="center",
+                fontsize=8,
+            )
+    axes[1].set_xscale("log")
+    axes[1].set_yscale("log")
+    axes[1].set(
+        xlabel="Post-onset lag (s)",
+        ylabel="Across-whale median (m$^2$)",
+        title="(b) Paired Wilcoxon tests",
+    )
+    axes[1].legend(frameon=False, fontsize=8)
+    for axis in axes:
+        axis.spines[["top", "right"]].set_visible(False)
+    return axes
 
 
 def plot_manuscript_panels(

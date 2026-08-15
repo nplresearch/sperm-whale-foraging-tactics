@@ -1,0 +1,11 @@
+{
+  "n_individuals": 20,
+  "retained_buzz_counts": {
+    "A": 1346,
+    "B": 1141
+  },
+  "minimum_per_type": 5,
+  "window_s": 30,
+  "label_provenance": "registered_gmm",
+  "time_origin": "dive_local"
+}
