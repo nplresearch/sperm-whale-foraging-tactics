@@ -8,15 +8,13 @@ explicitly before the repository and manuscript are released together.
 
 The remaining manuscript-facing issues in this file are:
 
-1. **“Total duration” diagnostic feature:** align the pair-plot label with the
-   implemented ramp-plus-plateau duration, or rerun it using full buzz duration.
-2. **Reconstruction-error wording:** report 219 m as the mean of deployment-
+1. **Reconstruction-error wording:** report 219 m as the mean of deployment-
    level median errors and avoid claiming a unique most-frequent winner.
-3. **Spatial recurrence/comeback analysis:** choose one recurrence definition
+2. **Spatial recurrence/comeback analysis:** choose one recurrence definition
    and classifier version and regenerate the associated prose and figures.
-4. **Terminal-buzz count:** reconcile 36 events (32 B/4 A) with the released
+3. **Terminal-buzz count:** reconcile 36 events (32 B/4 A) with the released
    table's 32 events (29 B/3 A).
-5. **Azores validation alignment:** resolve the operative 29/28/1 split,
+4. **Azores validation alignment:** resolve the operative 29/28/1 split,
    buzz-window definition and corrected sequence-bootstrap intervals.
 
 Resolved items remain below for provenance. Release-only tasks, including the
@@ -128,7 +126,7 @@ both counts and boundary movements. Downstream manuscript values continue to
 use the original classifier. This item is resolved as a transparent provenance
 choice supported by an explicit reconstruction-sensitivity analysis.
 
-## “Total duration” diagnostic feature
+## “Total duration” diagnostic feature (resolved for the manuscript)
 
 The source model-selection notebook defines its third diagnostic feature as
 `duration_start + duration_plateau` but labels it “total duration.” The
@@ -138,10 +136,28 @@ function follows the operative notebook definition exactly and names the
 derived feature `ramp_plus_plateau_duration_s`.
 
 This does not affect the main A/B classifier, which uses ramp-up duration and
-3-D speed. Nevertheless, any Methods or SI caption discussing the five-feature
-pair plot should either call this quantity ramp-plus-plateau duration or change
-the code deliberately to use the full buzz duration and regenerate that
-diagnostic.
+3-D speed. It also does not affect the manuscript's five-feature analysis in
+Supplementary Fig. S11. That figure uses the genuine full `buzz_duration_s`,
+despite the similarly named repository-side diagnostic. We verified this by
+recomputing every duration-related Spearman coefficient printed in S11 using
+the released confidently classified A/B events. Full `buzz_duration_s`
+reproduces all 12 displayed pooled, Type A and Type B coefficients after
+rounding to the reported two decimal places; ramp-up plus plateau duration
+reproduces only one of the 12.
+
+For example, the displayed ramp-up/duration correlations are 0.90 pooled,
+0.75 for Type A and 0.87 for Type B. Full buzz duration reproduces
+0.90/0.75/0.87, whereas ramp-up plus plateau gives 0.91/0.77/0.90. The
+displayed Type B roll/duration correlation is 0.12, reproduced by full buzz
+duration rather than the 0.09 obtained from ramp-up plus plateau.
+
+Therefore the S11 axes, caption, Results, Methods and Discussion correctly use
+“total buzz duration” and require no change. The naming discrepancy is confined
+to the separate repository-side BIC diagnostic, which is not reported or
+plotted in the active manuscript. This manuscript-facing item is resolved;
+the explicit `ramp_plus_plateau_duration_s` name should be retained in the
+public diagnostic code and outputs to prevent the two quantities from being
+conflated again.
 
 ## Available reconstructed trajectories
 
@@ -231,19 +247,35 @@ level procedure as the figure-reproduction default and retains the grouping and
 exclusion range as explicit arguments for sensitivity analyses. Before public
 release, commit this implementation and its frozen Markov outputs together.
 
-## Terminal-buzz count
+## Terminal-buzz count (resolved in the manuscript)
 
-With the registered current classifier, missing post-buzz-pause values identify
-32 terminal events in the released table: 29 Type B and 3 Type A. The current
-Results instead state 36 terminal events (32 Type B and 4 Type A). The
-result-producing pause notebook does not contain a separate terminal-event
-derivation that explains this difference.
+The apparent 36-versus-32 discrepancy was caused by applying the classifier
+confidence filter to the terminal events, not by a difference in terminal-event
+identification. The released table contains 36 buzzes with missing
+`post_buzz_pause_s`: under the registered current classifier, 29 are Type B, 3
+are Type A, and 4 are unassigned. Thus, 36 is the total number of terminal
+events and 32 is the confidently classified subset. This is shown explicitly
+in `notebooks/dswp/01_event_level_analysis.ipynb`, under “Terminal-buzz count
+and classifier status.”
 
-Before release, recover the precise vocal-phase termination rule used for the
-36-event statement or align the prose and binomial calculation to the released
-event table. This should not be justified from the Markov end-transition
-counts: those are a different sequence-level quantity and are affected by
-ambiguous labels.
+The Results were updated to read:
+
+> Final buzzes (those not followed by any further echolocation before
+> surfacing) were first identified and excluded from pause analysis; of the 36
+> terminal events, 29 were confidently identified as Type B and only 3 as Type
+> A, which is itself strongly consistent with the Markov termination asymmetry
+> (expected ratio under the null hypothesis of equal termination probabilities:
+> $\sim$0.5; observed: $0.91$; binomial $P < 0.001$).
+
+The archived source analysis in
+`unversioned-old-repo/notebooks/buzz_pauses_CLEAN.ipynb` independently derives
+36 missing “next-echolocation time” values from 3,686 buzzes. It is therefore
+consistent with the updated notebook on terminal-event identification and the
+total of 36. Its markdown annotation of 32 Type B and 4 Type A reflects an
+older, unpreserved classifier assignment; the registered current classifier
+provides the reproducible 29 Type B, 3 Type A, and 4 unassigned breakdown used
+for the manuscript correction. The pause-distribution analyses and figure
+panels are unchanged because all terminal events were already excluded.
 
 ## Azores validation: reproduced, with manuscript corrections required
 
