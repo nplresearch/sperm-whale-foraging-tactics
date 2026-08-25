@@ -28,8 +28,9 @@ tables to `results/azores/`:
 python scripts/run_azores_validation.py local-data/azores
 ```
 
-The operative nearest-corner implementation has one overlapping event, so its
-actual labels are 29 Type A, 28 Type B, and one unclassified buzz rather than a
-balanced 29/29 split. The export includes a disjoint balanced assignment as a
-sensitivity analysis. See `docs/known_issues.md` for the resulting manuscript
-corrections and the corrected Markov bootstrap procedure.
+The final manuscript-facing nearest-corner implementation excludes observations
+exactly equidistant from the two corners instead of applying an arbitrary
+tie-break. It therefore yields 28 Type A, 28 Type B, and two unclassified
+boundary ties. The export also includes a disjoint 29/29 assignment as a
+sensitivity analysis. See `docs/known_issues.md` for provenance and the
+duplicate-preserving dive-bootstrap procedure.

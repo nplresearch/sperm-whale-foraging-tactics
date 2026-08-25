@@ -9,7 +9,7 @@ the same analysis; details and alternatives are in `known_issues.md`.
 | Paper result or panel | Public input | Implementation and output | Status |
 | --- | --- | --- | --- |
 | DSWP deployment summary | `data/dswp/deployment_summary.csv` | checksummed source table | Releasable after steward review |
-| Reconstruction-method comparison | `data/dswp/reconstruction_error_summary.csv` | `results/dswp/reconstruction_method_summary.csv`; `figures/dswp/reconstruction_error_summary.*` | Reproduced from coordinate-free summaries; manuscript aggregation wording requires correction |
+| Reconstruction-method comparison | `data/dswp/reconstruction_error_summary.csv` | `results/dswp/reconstruction_method_summary.csv`; `figures/dswp/reconstruction_error_summary.*` | Reproduced from coordinate-free summaries; manuscript reports the mean of deployment-specific medians and the eight--eight win tie |
 | Regional trajectory map | local-coordinate DSWP paths | none | Intentionally not reproducible without location-bearing data |
 | Representative 3-D path | `trajectory_index.csv`; `trajectories/T###.npz` | path loader in `trajectory.analysis` | Numerical path released; final manuscript composition is not automated |
 | Buzz phase construction and threshold sensitivity | `buzz_clicks.csv`; `buzz_events.csv` | `dswp.buzz_thresholds`; `notebooks/dswp/00_dataset_and_buzz_construction.ipynb` | Production 0.3-s/0.05-s/five-point segmentation and all three alpha diagnostics reproduced from derived clicks; raw click detection is out of scope |
@@ -29,7 +29,7 @@ the same analysis; details and alternatives are in `known_issues.md`.
 | Trajectory-driven energetic comparison | derived buzz events and pitch-adaptive trajectories | `dswp.energetics`; `buzz_energy.csv`; `individual_energy.csv`; `individual_energy.*` | Reported 1.28/9.07 MJ means reproduced with the model described in the current Methods and SI |
 | Aoki steady-drag comparison | same observed buzz intervals and reconstructed speed series | `dswp.aoki`; `aoki_event_energy.csv`; `aoki_individual_energy.csv` | Additional directional evidence: Type B remains higher in all 20 whales, with B/A = 8.51 |
 | Spatial recurrence/comebacks | coarse local deployment paths and derived buzz times | `comeback_*` tables and figures | Legacy manuscript and current-classifier versions both reproduced; one definition must be selected |
-| Azores prey-field validation | pinned Dryad version-1 files | `validation.azores`; `results/azores/*`; `notebooks/validation/03_azores_derivation.ipynb` | Numerical main and supplementary analyses reproduced from local checksummed CC0 inputs; manuscript sample-count, echo-window, nearest-range, and Markov-CI wording require correction |
+| Azores prey-field validation | pinned Dryad version-1 files | `validation.azores`; `results/azores/*`; `notebooks/validation/03_azores_derivation.ipynb` | Final 28/28/two-tie main and supplementary analyses reproduced from local checksummed CC0 inputs; full buzz-plus-margin window and duplicate-preserving Markov bootstrap frozen |
 | CETI 2024 buzz-level validation | `data/ceti2024/buzz_features.csv` | `validation.ceti2024`; `results/ceti2024/*` | Supported kinematic and sequence summaries reproduced |
 | CETI 2024 path/heading panels | steward-approved local-coordinate paths | none yet | Blocked on reviewed reconstructed trajectory bundle |
 

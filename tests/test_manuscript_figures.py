@@ -101,8 +101,9 @@ def test_azores_figure_adapter_preserves_two_splits(tmp_path):
         import pytest
         pytest.skip("production Azores source files are not available")
     result = run_azores_validation(source, tmp_path / "azores", n_boot=4)
-    assert result["summary"]["operative_counts"].get("A") == 29
+    assert result["summary"]["operative_counts"].get("A") == 28
     assert result["summary"]["operative_counts"].get("B") == 28
+    assert result["summary"]["operative_counts"].get("unclassified") == 2
     assert result["summary"]["balanced_counts"].get("A") == 29
     assert result["summary"]["balanced_counts"].get("B") == 29
     figure = azores_manuscript_figure(result)

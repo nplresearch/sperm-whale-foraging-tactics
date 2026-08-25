@@ -1,58 +1,47 @@
 # Submission reconciliation: manuscript, code, and data
 
-Status: updated 2026-08-15. This checklist is intended for the revision made after the
+Status: updated 2026-08-25. This checklist is intended for the revision made after the
 preprint has been online for a short period. It distinguishes checks that could
 change reported results from release and documentation work. The preprint
 snapshot can remain fixed while these checks are run.
 
 ## Numbered remaining-issue index
 
-1. **Azores manuscript alignment:** choose the operative classification and
-   window definitions and regenerate corrected sequence intervals.
-2. **Comeback analysis:** choose one recurrence definition and classifier.
-3. **Terminal-buzz count:** reconcile the event definition and type counts.
-4. **CETI roll panel:** release a safe derived input, label it legacy, or remove
+1. **CETI roll panel:** release a safe derived input, label it legacy, or remove
    the panel.
-5. **Buzz-centred release hygiene:** commit the corrected implementation and
-   outputs and retire or clearly mark the obsolete null-result notebook.
-6. **Trajectory/L\'evy output freeze:** rerun and checksum the corrected
-   trajectory statistics and figures; the fitter wording itself is resolved.
-7. **Trajectory-reconstruction freeze:** regenerate the reviewed comparison
-   output and retain the correct 219-m aggregation wording.
-8. **DSWP Markov/pause freeze:** freeze the ten-deployment, gap-preserving
-   Markov outputs and resolve pause quantities consistently with issue 3.
-9. **Data-steward approval:** approve every derived release input and rerun the
+2. **Data-steward approval:** approve every derived release input and rerun the
    safety audit.
-10. **Map reproducibility boundary:** document or release the permissible map
-    inputs without exposing protected locations or identifiers.
-11. **Manuscript-artifact crosswalk:** bind every claim and figure to frozen
-    code, inputs, checksums and tolerances.
-12. **Bibliography cleanup:** repair the remaining style/metadata warnings.
+3. **Map reproducibility boundary:** document or release the permissible map
+   inputs without exposing protected locations or identifiers.
+4. **Manuscript-artifact crosswalk and version freeze:** bind every claim and figure to frozen
+   code, inputs, checksums and tolerances.
 
-The corrected buzz-centred scientific result, the custom L\'evy fitter Methods
-description, the plateau-threshold diagnostic, the classifier-speed provenance,
-the energetic-model alignment and the DSWP Markov resampling description are
-resolved; only their explicitly listed release-freeze tasks remain open. For the plateau diagnostic, the
+The Azores analysis, terminal-event denominator, reconstruction aggregation,
+corrected buzz-centred result, custom L\'evy fitter, plateau-threshold diagnostic,
+classifier-speed provenance, energetic-model alignment, DSWP Markov resampling,
+and bibliography records are resolved. The comeback discrepancy is retained as
+an author-approved production exception: both analytical variants remain
+labelled, and the legacy path reproduces the frozen manuscript result. For the plateau diagnostic, the
 Methods and Supplementary Fig. S10 now identify 0.7 as a robust operating point
 rather than a unique optimum and report the deterministic sweep values; the
 production boundaries are unchanged.
 
 ## A. Result-affecting gates
 
-### 1. Azores validation reproduction — completed; manuscript decisions remain
+### Resolved A1. Azores validation reproduction and manuscript alignment
 
 **Resolution.** The checksum-pinned Dryad files now drive the complete
 publication-safe prey-field, kinematic, pause, geometry, robustness, and
-sequence implementation in `validation.azores`. The operative 29/28/1 split
-and a genuinely balanced 29/29 sensitivity are both exported and tested.
+sequence implementation in `validation.azores`. The final 28/28/two-tie split
+and a disjoint 29/29 sensitivity are both exported and tested.
 
 **Claims to reproduce.**
 
 - 27 dives and 108 buzzes overall; 11 daytime dives and 58 analysed buzzes.
-- The 29/29 extreme-corner classification and its conservative-split checks.
-- Echo-count result: \(P=0.037\), \(d=0.35\), including its stated lack of
+- The 28/28/two-tie extreme-corner classification and its conservative-split checks.
+- Echo-count result: \(P=0.037\), \(d=0.36\), including its stated lack of
   robustness.
-- Prey-depth result: \(P=0.003\), \(d=1.39\), plus conservative-split and
+- Prey-depth result: \(P=0.004\), \(d=1.34\), plus conservative-split and
   threshold-free results.
 - Nearest-prey-range null result.
 - Signed vertical velocity, geometry, pause and Markov values in the SI.
@@ -62,12 +51,14 @@ and a genuinely balanced 29/29 sensitivity are both exported and tested.
 `notebooks/validation/03_azores_derivation.ipynb`, and
 `notebooks/validation/04_azores_manuscript_figures.ipynb`.
 
-**Remaining decision.** Align the manuscript with the operative 29/28/1 sample
-or choose the balanced sensitivity, describe the implemented buzz-window
-definition, and regenerate Markov intervals from the duplicate-preserving dive
-bootstrap. Do not combine the operative P values with balanced 29/29 wording.
+**Resolution.** The manuscript and registered outputs use the final classifier
+from Andrea Santoro's `CETI_Foraging` commit `a74bab4`: two observations exactly
+equidistant from both corners remain unclassified. The echo window runs from
+10 s before buzz onset through 10 s after buzz end, nearest range is the minimum
+over that interval, and the SI intervals use the duplicate-preserving dive
+bootstrap. The regenerated SI figure is pixel-identical to the Overleaf asset.
 
-### 1b. Correct the buzz-centred displacement time origin and refreeze the claim (resolved)
+### Resolved A2. Buzz-centred displacement time origin
 
 **Why this is substantial.** The SI's eight-whale null result is reproduced
 only when the legacy notebook subtracts `dive_start` from click times that are
@@ -87,13 +78,11 @@ eight tested positive lags, with all paired Wilcoxon P values below 0.001 after
 Bonferroni correction. Corrected tables and figures are pipeline outputs; the
 double-subtraction path remains only as provenance and a regression test.
 
-**Release hygiene still required.** Before the public repository is frozen,
-commit the corrected implementation, regression test, tables and figure
-together. The exploratory Lévy notebook that generated the obsolete null result
-must either be updated or clearly marked as legacy and non-manuscript-producing,
-so that it cannot accidentally regenerate or be cited as the operative analysis.
+The corrected implementation, regression test, tables and figure are registered
+together. The double-subtraction path remains explicitly named as forensic
+provenance and is not a manuscript-producing default.
 
-### 2. Choose and register one comeback definition
+### Accepted exception A3. Comeback definition and classifier provenance
 
 **Why this is substantial.** The preprint deliberately retains the v1
 horizontal 10/50-m analysis, whereas the recovered production context uses
@@ -110,11 +99,13 @@ horizontal 10/50-m analysis, whereas the recovered production context uses
 **Implementation target.** `src/dswp/comebacks.py` and
 `results/dswp/comeback_*`.
 
-**Pass condition.** One preregistered spatial definition and one classifier
-version regenerate the SI prose, S8, S9 and all counts and inferential values.
-Do not combine legacy labels with the recovered trajectory context.
+**Production decision.** For the 2026-08-25 paper freeze, the author elected to
+retain the exploratory legacy manuscript result and not rerun S8, S9 or their
+prose. The registered-current calculation remains a separately labelled
+sensitivity. This waiver closes the item for production without asserting that
+the two analytical definitions are equivalent.
 
-### 3. Energetic-model reproduction — completed
+### Resolved A3. Energetic-model reproduction
 
 **Resolution.** The manuscript and SI now describe the trajectory-driven
 positive-acceleration model implemented in `src/dswp/energetics.py`. The
@@ -141,22 +132,15 @@ Type A, 9.069 MJ for Type B, Type B above Type A in all 20 paired whales, and
 the registered drag, positive-acceleration, resting, and Aoki components. The
 derivation is documented in `notebooks/dswp/02_energy_model_derivation.ipynb`.
 
-### 4. Resolve the terminal-buzz/pause count mismatch
+### Resolved A4. Terminal-buzz/pause count
 
-**Why this is substantial.** The Results report 36 terminal events
-(32 Type B, 4 Type A), while the registered released table currently yields
-32 (29 Type B, 3 Type A).
+The registered event table contains 36 terminal buzzes: 29 Type B, 3 Type A,
+and 4 unassigned. Thus 36 is the full terminal-event count and 32 the confidently
+classified denominator; the observed B fraction is 29/32 = 0.91. The Results
+state both denominators explicitly. Pause analyses remain unchanged because all
+36 terminal events were already excluded.
 
-**Implementation target.** Recover and document the exact vocal-phase and
-terminal-event rule used for the manuscript, or update the prose and binomial
-calculation from `results/dswp/pause_categories.csv` and
-`pause_association.json`.
-
-**Pass condition.** One event definition regenerates the count, type split,
-binomial result and pause panels. Terminal counts must not be inferred from the
-Markov end probabilities.
-
-### 5. Decide how to handle the CETI roll-speed time course
+### Active issue 1. Decide how to handle the CETI roll-speed time course
 
 **Why this is substantial.** The safe CETI release table reproduces the
 per-buzz kinematic contrasts but not the raw 25-Hz roll-speed time-course panel.
@@ -174,7 +158,7 @@ deterministic generator. The validation remains limited to 231 kinematic
 buzzes from 10 tags/19 dives and 149 heading-resolved buzzes from five tags,
 without demographic, prey-field or full-GMM claims.
 
-### 5b. Resolve classifier-speed provenance (resolved)
+### Resolved A5. Classifier-speed provenance
 
 The primary GMM retains the original constant-speed-derived buzz-average 3-D
 speed and therefore preserves the reported A/B/unassigned counts and all
@@ -192,11 +176,11 @@ across classifier versions.
 
 ## B. Important numerical and methodological confirmations
 
-### 6. Freeze the trajectory and Lévy-like outputs
+### Resolved B1. Trajectory and Lévy-like outputs
 
-The manuscript Methods already describe the operative custom 30-candidate
-cut-off sweep and retain the cautious term “Lévy-like.” This remaining item is
-only the clean rerun, numerical comparison and artifact freeze.
+The manuscript Methods describe the operative custom 30-candidate cut-off sweep
+and retain the cautious term “Lévy-like.” The registered numerical outputs,
+figures and regression tests freeze the following values:
 
 Run `trajectory.analysis.analyze_release` on float64 reconstructed paths and
 compare:
@@ -207,32 +191,28 @@ compare:
 - the 30-candidate, 5th–80th-percentile KS cut-off procedure;
 - main Fig. 1c–d and the supplementary robustness panels.
 
-**Pass condition.** `results/trajectory/per_dive_levy_msd.csv`,
-`timescale_msd.csv` and `population_summary.json` reproduce the manuscript to
-declared tolerances. Retain “Lévy-like”; do not claim a unique or optimal Lévy
-mechanism.
+`results/trajectory/per_dive_levy_msd.csv`, `timescale_msd.csv` and
+`population_summary.json` reproduce the manuscript to declared tolerances.
+Future revisions should retain “Lévy-like” and avoid claiming a unique or
+optimal Lévy mechanism.
 
-### 7. Freeze the trajectory-reconstruction comparison
+### Resolved B2. Trajectory-reconstruction comparison
 
-Regenerate `results/dswp/reconstruction_method_summary.csv` from the reviewed
-aggregate reconstruction-error table.
-
-**Pass condition.** The selected method has the lowest mean error across
+`results/dswp/reconstruction_method_summary.csv` records that the selected method has the lowest mean error across
 deployments and the mean of deployment-specific median errors is 219.398 m.
 Do not revert to “pooled median” or “unique winner” language.
 
-### 8. Freeze Markov and pause-transition outputs
+### Resolved B3. Markov and pause-transition outputs
 
-Regenerate the deployment-resampled Markov analysis using 200 resamples that
-exclude ten deployments and preserve ambiguous gaps.
-
-**Pass condition.** `results/dswp/buzz_markov_transitions.csv` and the figure
+The registered analysis uses 200 resamples that exclude ten deployments and
+preserve ambiguous gaps. `results/dswp/buzz_markov_transitions.csv` and the figure
 recover Start→B 0.54, A→A 0.55, B→B 0.42, A→End 0.06 and B→End 0.13 with the
-reported uncertainties. Resolve item 4 separately.
+reported uncertainties. The terminal-event denominator is frozen separately in
+Resolved A4.
 
 ## C. Data-release and reproducibility obligations
 
-### 9. Obtain explicit steward approval for every derived release input
+### Active issue 2. Obtain explicit steward approval for every derived release input
 
 The DSWP derived inputs, reconstructed trajectories and CETI feature table are
 currently marked `steward_review_required`.
@@ -245,7 +225,7 @@ currently marked `steward_review_required`.
 - `scripts/check_release_safety.py` passes in a clean clone.
 - The private identifier crosswalk and export log remain outside the release.
 
-### 10. Define the reproducibility boundary for map artwork
+### Active issue 3. Define the reproducibility boundary for map artwork
 
 Main Fig. 1’s regional map and named representative track are not currently
 generated by the public code, intentionally avoiding location-bearing data.
@@ -255,7 +235,7 @@ generator, or state clearly that numerical trajectory analyses are
 reproducible while the geographic presentation asset is not. Scrub private
 names and tag identifiers from release artifacts.
 
-### 11. Run a final manuscript–artifact crosswalk
+### Active issue 4. Run a final manuscript–artifact crosswalk and version freeze
 
 For every main and supplementary figure/table, record:
 
@@ -269,20 +249,15 @@ For every main and supplementary figure/table, record:
 numbers agree with the frozen outputs; then record the manuscript commit, code
 commit, data-bundle version, environment lock and archive DOI together.
 
-### 12. Clear the remaining bibliography warnings
+### Resolved C1. Bibliography warnings
 
-The manuscript compiles, but BibTeX still warns that `Tonnesen2020dataset` uses
-an unsupported entry type and that `Leitao_2025` lacks a journal field.
-
-**Pass condition.** Both records use complete, style-compatible metadata and a
-fresh build produces no missing-field or unsupported-entry warnings.
+`Tonnesen2020dataset` uses a style-compatible `@misc` entry and `Leitao_2025`
+includes its journal. A fresh build produces no unsupported-entry or
+missing-field warning for either record.
 
 ## Recommended execution order
 
-1. Issues 2 and 1: comeback definition, then Azores manuscript alignment.
-2. Issues 3 and 4: terminal-count reconciliation and CETI roll-panel decision.
-3. Issues 5--8: buzz-centred, trajectory/L\'evy, reconstruction and Markov
-   release freezes.
-4. Issues 9--10: steward review, safety audit and map boundary.
-5. Issues 12 and 11: bibliography cleanup, final manuscript--artifact crosswalk
-   and version freeze.
+1. Choose the CETI roll-panel disposition.
+2. Complete steward review, rerun the safety audit, and document the map boundary.
+3. Complete the manuscript--artifact crosswalk and freeze the manuscript, code,
+   data-bundle and environment versions together.

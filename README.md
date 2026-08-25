@@ -1,12 +1,13 @@
 # Multiscale sperm-whale foraging: reproducibility repository
 
-This repository is a computational release candidate for the accompanying
+This repository is the production analysis repository for the accompanying
 paper on the multiscale organization of sperm-whale foraging. It contains the
-tested analysis code, documented notebooks, and publication-safe derived data
-currently available for release. It does not yet reproduce every panel: the
-remaining analytical and data-steward gates are stated below and in
-[docs/known_issues.md](docs/known_issues.md). The journal-submission decisions
-and pass conditions are collected in
+tested analysis code, documented notebooks, and derived-data bundle used for
+the frozen manuscript results. Its scope is deliberately narrower than an
+upstream reconstruction from raw tags: protected raw sensor records and some
+presentation-only or location-bearing panels are outside the public
+reproduction boundary. The exact scope and release obligations are recorded in
+[docs/known_issues.md](docs/known_issues.md) and
 [docs/submission_reconciliation.md](docs/submission_reconciliation.md).
 
 The repository is deliberately a **derived-data release**. It does not contain
@@ -21,9 +22,9 @@ The analysis is organized around three datasets and two nested scales:
 
 | Dataset | Reproduction status | Public input used here |
 | --- | --- | --- |
-| DSWP, Dominica (2014--2018) | Numerical primary analyses and component figures run; manuscript decisions listed in `known_issues.md` remain | Pseudonymized reconstructed trajectories and derived buzz-level measurements |
-| Azores | Numerical prey-field, kinematic, geometry, pause, robustness, and sequence analyses run from checksummed open inputs; manuscript choices remain explicit | Retrieval instructions and checksum manifest for the openly archived source data |
-| CETI, Dominica (2024) | Buzz-level validation runs; trajectory-dependent panels await steward-approved paths | Derived buzz information included; reviewed local-coordinate reconstructions are a documented release gate |
+| DSWP, Dominica (2014--2018) | Primary numerical analyses and component figures are frozen; the manuscript's exploratory comeback result is retained as an explicitly documented legacy-production exception | Pseudonymized reconstructed trajectories and derived buzz-level measurements |
+| Azores | Final 28/28/two-tie prey-field, kinematic, geometry, pause, robustness, and duplicate-preserving sequence analyses run from checksummed open inputs | Retrieval instructions and checksum manifest for the openly archived source data |
+| CETI, Dominica (2024) | Buzz-level validation runs within the released scope; the legacy roll time course and any additional trajectory-dependent panels remain outside the deterministic public reproduction boundary | Derived buzz information included; reviewed local-coordinate reconstructions remain a separate data-governance decision |
 
 The code is split into:
 
@@ -75,20 +76,23 @@ are not silently mirrored here.
 
 ## Repository status
 
-This is a release-candidate production repository and should not yet be pushed
-to a public remote. Before public release:
+The analysis code, numerical outputs, and manuscript-facing Azores validation
+are frozen for paper production. The full test suite and release-safety audit
+pass in the maintained environment. The comeback calculation is intentionally
+retained exactly as used by the manuscript; its mixed legacy provenance is
+documented rather than silently rewritten.
+The exact frozen scope and accepted exception are summarized in
+[docs/production_freeze.md](docs/production_freeze.md).
 
-1. approve the final derived-data tables and pseudonymization;
-2. select a software and data licence with the data owners;
-3. add the final paper citation and archival DOI;
-4. resolve the documented Azores sample-count, echo-window, and bootstrap-CI
-   manuscript choices;
-5. decide whether to add the reviewed CETI reconstructed paths or explicitly
-   scope the release to the buzz-level validation;
-6. resolve the manuscript/code discrepancies in
-   [docs/known_issues.md](docs/known_issues.md);
-7. run the full pipeline in a clean environment; and
-8. require the release-safety check to pass.
+This technical freeze is not, by itself, authorization to publish the derived
+data bundle. A public archival release still requires:
+
+1. data-steward approval of the final derived tables and pseudonymization;
+2. software and data licences selected with the data owners;
+3. the final paper citation and archival DOI;
+4. an explicit decision on whether CETI reconstructed paths enter the release;
+5. a final manuscript--artifact checksum crosswalk; and
+6. a clean-environment rerun of the pipeline and release-safety audit.
 
 ## Provenance
 
@@ -99,12 +103,11 @@ raw-data locations. See [docs/provenance.md](docs/provenance.md).
 
 Important code--manuscript discrepancies found during extraction are recorded
 in [docs/known_issues.md](docs/known_issues.md). The trajectory-driven energy
-model is now aligned between the code, Methods, and SI. Remaining issues
-include a comeback paragraph that combines a legacy classifier with recurrence
-parameters different from those stated in the SI, plus Azores wording and
-bootstrap choices that differ from the operative analysis. The release retains
-both result-producing implementations, pins the open Azores sources, and makes
-every unresolved decision explicit.
+model, Azores validation, classifier provenance, sequence resampling, terminal
+event denominator, and trajectory-scale analyses are aligned between code and
+manuscript. The comeback paragraph remains a documented production exception:
+the release retains both the manuscript-producing legacy calculation and the
+registered-current alternative, without presenting them as interchangeable.
 
 The repository also includes the published steady-drag formulation of Aoki et
 al. (2012), applied to the same observed buzz intervals as additional evidence

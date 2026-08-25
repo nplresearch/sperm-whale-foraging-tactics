@@ -1,5 +1,5 @@
 operative_type,geometry_group,n,proportion
-A,oscillatory,14,0.4827586206896552
-A,persistent,15,0.5172413793103449
+A,oscillatory,14,0.5
+A,persistent,14,0.5
 B,oscillatory,11,0.39285714285714285
 B,persistent,17,0.6071428571428571

@@ -307,21 +307,29 @@ def extract_azores_buzz_features(sources: dict[str, pd.DataFrame]) -> pd.DataFra
 
 
 def classify_nearest_corners(features: pd.DataFrame, n_per_corner: int = 29) -> pd.DataFrame:
-    """Reproduce the supplied scripts' overlapping nearest-corner labels.
+    """Apply the final Azores extreme-corner rule in two-dimensional rank space.
 
-    The independent A and B selections overlap once at ``n_per_corner=29``.
-    The source scripts give that event A precedence, yielding 29 A, 28 B, and
-    one unclassified event.  This function deliberately preserves that
-    operative implementation rather than silently claiming a balanced split.
+    Candidate Type A and Type B events are the ``n_per_corner`` observations
+    nearest the lower-left and upper-right corners, respectively.  Events
+    exactly equidistant from the two corners are boundary ties and remain
+    unclassified instead of receiving an arbitrary precedence rule.  For the
+    58 daytime buzzes and ``n_per_corner=29``, this yields 28 Type A, 28 Type B,
+    and two boundary ties, matching the final manuscript analysis.
     """
     labelled = features.copy()
+    tied = np.isclose(labelled["distance_to_a"], labelled["distance_to_b"])
     a_index = labelled.nsmallest(n_per_corner, "distance_to_a").index
     b_index = labelled.nsmallest(n_per_corner, "distance_to_b").index
+    tie_index = labelled.index[tied]
+    a_index = a_index.difference(tie_index)
+    b_index = b_index.difference(tie_index)
     overlap = a_index.intersection(b_index)
+    if len(overlap):
+        raise ValueError("Nearest-corner selections overlap after boundary ties are removed")
     labelled["operative_type"] = "unclassified"
-    labelled.loc[b_index, "operative_type"] = "B"
     labelled.loc[a_index, "operative_type"] = "A"
-    labelled["nearest_corner_overlap"] = labelled.index.isin(overlap)
+    labelled.loc[b_index, "operative_type"] = "B"
+    labelled["nearest_corner_tie"] = tied
     return labelled
 
 
@@ -641,7 +649,7 @@ def run_azores_validation(
         "n_daytime_dives": len(DAYTIME_DIVES),
         "n_daytime_buzzes": int(len(events)),
         "operative_counts": events["operative_type"].value_counts().sort_index().to_dict(),
-        "nearest_corner_overlap": int(events["nearest_corner_overlap"].sum()),
+        "nearest_corner_ties": int(events["nearest_corner_tie"].sum()),
         "balanced_counts": events["balanced_type"].value_counts().sort_index().to_dict(),
         "pre_buzz_vertical_speed": {
             "mean_a_m_s": float(pre_a.mean()),
@@ -657,7 +665,7 @@ def run_azores_validation(
         public_columns = [
             "dive_no", "buzz_no_in_dive", "ramp_up_duration_s", "buzz_duration_s",
             "avg_vertical_speed_m_s", "n_plateau_regions", "ramp_rank", "speed_rank",
-            "distance_to_a", "distance_to_b", "operative_type", "nearest_corner_overlap",
+            "distance_to_a", "distance_to_b", "operative_type", "nearest_corner_tie",
             "balanced_type", "prey_echo_count", "nearest_prey_range_m", "mean_prey_depth_m",
             "pre_buzz_vertical_speed_m_s", "post_buzz_pause_s", "pause_category",
             "vertical_geometry", "geometry_group",

@@ -23,10 +23,10 @@ def _bar_contrasts(ax, table, title):
 
 
 def azores_manuscript_figure(result):
-    """Show operative 29/28/1 and balanced 29/29 contrasts side by side."""
+    """Show operative 28/28/2 and balanced 29/29 contrasts side by side."""
     fig, axes = plt.subplots(3, 4, figsize=(15, 10), constrained_layout=True)
     metrics = list(result["operative_contrasts"]["metric"].drop_duplicates())
-    for row, table, title in ((0, result["operative_contrasts"], "Operative 29/28/1"), (1, result["balanced_contrasts"], "Balanced 29/29 sensitivity")):
+    for row, table, title in ((0, result["operative_contrasts"], "Operative 28/28/2"), (1, result["balanced_contrasts"], "Balanced 29/29 sensitivity")):
         for col, metric in enumerate(metrics):
             ax = axes[row, col]
             group = table[table["metric"].eq(metric)]

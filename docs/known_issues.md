@@ -1,49 +1,45 @@
 # Known release issues and manuscript checks
 
 This file records discrepancies found while making the result-producing code
-independent of the private analysis environment. They should be resolved
-explicitly before the repository and manuscript are released together.
+independent of the private analysis environment. Resolved items and explicit
+production exceptions are retained here as provenance.
 
 ## Numbered active-issue index
 
-The remaining manuscript-facing issues in this file are:
+No result-affecting manuscript issue remains active for the current production
+freeze. The spatial-recurrence/comeback discrepancy is accepted as a documented
+production exception: the manuscript-producing legacy calculation is retained
+without being conflated with the registered-current sensitivity analysis.
 
-1. **Reconstruction-error wording:** report 219 m as the mean of deployment-
-   level median errors and avoid claiming a unique most-frequent winner.
-2. **Spatial recurrence/comeback analysis:** choose one recurrence definition
-   and classifier version and regenerate the associated prose and figures.
-3. **Terminal-buzz count:** reconcile 36 events (32 B/4 A) with the released
-   table's 32 events (29 B/3 A).
-4. **Azores validation alignment:** resolve the operative 29/28/1 split,
-   buzz-window definition and corrected sequence-bootstrap intervals.
-
-Resolved items remain below for provenance. Release-only tasks, including the
-CETI roll panel, steward approval, artifact crosswalk and version freeze, are
-numbered separately in `submission_reconciliation.md`.
+Release-only tasks, including the CETI roll panel, steward approval, artifact
+crosswalk and archival freeze, are numbered separately in
+`submission_reconciliation.md`.
 
 ## Notebook touchpoint index
 
-Unresolved choices are surfaced in the notebooks that they can change:
+Decision-sensitive and historically discrepant choices are surfaced in the
+notebooks that they can change:
 
 - `dswp/00_dataset_and_buzz_construction.ipynb`: the boundary between derived
   click-time reproduction and unavailable raw-audio/full-record processing;
 - `trajectory/02_manuscript_trajectory_figures.ipynb`: reconstruction-error
-  wording and location-bearing maps; the resolved L\'evy-fitting and legacy
+  provenance and location-bearing maps; the resolved L\'evy-fitting and legacy
   buzz-centred paths remain visible there as provenance and regression checks;
-- `dswp/03_manuscript_figure_components.ipynb`: classifier speed, diagnostic
-  duration, DSWP Markov resampling, and terminal-buzz denominator;
+- `dswp/03_manuscript_figure_components.ipynb`: resolved classifier-speed,
+  diagnostic-duration, DSWP Markov-resampling, and terminal-buzz provenance;
 - `dswp/04_comeback_reproduction_audit.ipynb`: recurrence thresholds and
   legacy versus registered classifier labels;
-- `validation/04_azores_manuscript_figures.ipynb`: 29/28/1 operative labels,
-  balanced sensitivity, echo window, nearest-range definition, and corrected
-  bootstrap intervals;
+- `validation/04_azores_manuscript_figures.ipynb`: final 28/28/two-tie labels,
+  balanced sensitivity, full buzz-plus-margin echo window, nearest-range
+  definition, and duplicate-preserving bootstrap intervals;
 - `validation/05_ceti2024_manuscript_figures.ipynb`: unavailable per-bin roll
   time course and the reviewed trajectory-data gate; and
 - `paper/00_manuscript_reproduction_status.ipynb`: paper-wide inventory of all
   these choices without selecting among unresolved alternatives.
 
-Every affected notebook uses the phrase `Known issue touchpoint` so these
-dependencies can be found mechanically before release.
+Decision-sensitive notebooks retain the searchable phrase
+`Known issue touchpoint`, with the text itself stating whether each decision is
+active or resolved.
 
 ## Plateau-threshold null diagnostic (resolved)
 
@@ -167,7 +163,7 @@ trajectories. After the stated depth, segment-length, and turning-point filters,
 209 dives from 20 individuals enter the trajectory-scale analysis, matching the
 manuscript.
 
-## Reconstruction-error wording
+## Reconstruction-error wording (resolved)
 
 The safe reconstruction-error table reproduces the four method comparisons
 from 20 anonymous deployments. For the selected pitch-adaptive method, the
@@ -179,9 +175,9 @@ deployment summaries.
 The pitch-adaptive method has the smallest mean of deployment-level mean
 errors (339.0 m versus 351.3 m for constant speed). It is tied with the
 constant-speed method for most deployment-level wins (eight each), rather than
-being uniquely most frequently best. The Results and figure caption should
-name the aggregation explicitly and avoid the current pooled-median and unique
-winner wording. Vessel positions remain a broad, conservatively interpreted
+being uniquely most frequently best. The Results and figure caption now name
+the aggregation explicitly and record the eight--eight tie rather than claiming
+a unique winner. Vessel positions remain a broad, conservatively interpreted
 reference rather than pointwise whale ground truth.
 
 ## Roll-rate units
@@ -192,7 +188,7 @@ converts that summary by the 25-Hz sampling rate and exposes
 `avg_roll_speed_deg_s`. The 2-s time-course table was recomputed directly as a
 time derivative and is also expressed in degrees per second.
 
-## Spatial-recurrence definition and classifier version
+## Spatial-recurrence definition and classifier version (accepted production exception)
 
 The current manuscript reports the comeback association as 18 deployments,
 1,691 classified buzzes, pooled OR 1.11 (95% CI 0.78--1.59), P = 0.56, with
@@ -216,7 +212,7 @@ gives 18 deployments and 1,660 buzzes, pooled OR 1.151 (95% CI 0.807--1.642),
 P = 0.433, with homogeneity P = 0.096. The biological conclusion remains null,
 but the numerical provenance is not interchangeable.
 
-Before submission, choose and document one coherent analysis:
+The coherent alternatives are:
 
 1. register the current classifier and a single recurrence definition, rerun
    all comeback numbers and figures, and update the SI; or
@@ -224,9 +220,14 @@ Before submission, choose and document one coherent analysis:
    describe its actual parameters, and explain why it differs from the main
    classifier.
 
-The repository retains both association outputs. The legacy labels are kept in
-a separate, clearly named table solely for forensic reproduction of the
-current manuscript figure.
+For the 2026-08-25 production freeze, the author elected not to rerun or rewrite
+this exploratory null result. The manuscript-producing legacy calculation is
+therefore retained as the frozen paper value, while the registered-current
+calculation remains a labelled sensitivity analysis. This is an explicit
+provenance exception, not evidence that the two definitions are equivalent.
+The repository retains both association outputs, and the legacy labels remain
+in a separate, clearly named table solely to reproduce the current manuscript
+figure.
 
 ## Markov graph: gaps and resampling unit (resolved in the manuscript)
 
@@ -277,58 +278,43 @@ provides the reproducible 29 Type B, 3 Type A, and 4 unassigned breakdown used
 for the manuscript correction. The pause-distribution analyses and figure
 panels are unchanged because all terminal events were already excluded.
 
-## Azores validation: reproduced, with manuscript corrections required
+## Azores validation (resolved)
 
 The four authoritative CC0 MATLAB files are pinned by Dryad version-1 file
 IDs, byte sizes, SHA-256 digests, and expected variables. The publication-safe
-implementation in `validation.azores` validates those local inputs and
-reproduces the numerical path of the supplied production scripts. It exports
-only derived event summaries and aggregate results; the MATLAB files remain
-outside this repository.
+implementation in `validation.azores` validates those local inputs and ports
+the final analysis in Andrea Santoro's `CETI_Foraging` commit `a74bab4`. It
+exports only derived event summaries and aggregate results; the MATLAB files
+remain outside this repository.
 
 The reproduced inputs and outputs are:
 
 - 27 dives, 108 buzzes, and the stated 11-dive/58-buzz daytime subset;
-- the operative nearest-corner labels: 29 Type A, 28 Type B, and one
-  unclassified buzz; the independent 29-nearest A and 29-nearest B selections
-  overlap once, and the scripts give that event A precedence;
-- prey echo count: P = 0.0366 and Cohen's d = 0.345; mean prey depth:
-  P = 0.00282 and d = 1.387; nearest range: P = 1.000;
+- the final nearest-corner labels: 28 Type A, 28 Type B, and two unclassified
+  buzzes exactly equidistant from the lower-left and upper-right corners;
+- prey echo count: P = 0.0368 and Cohen's d = 0.363; mean prey depth:
+  P = 0.00410 and d = 1.343; nearest range: P = 0.972;
 - the reported robustness values, including continuous rank correlations of
   rho = -0.221 (P = 0.0948) for echo count and rho = -0.456 (P = 0.00516)
   for prey depth;
-- pre-buzz signed vertical speed of +0.253 m/s for A and -0.290 m/s for B
-  (P = 0.0143), pause chi-square = 1.07 (P = 0.784), and 48%/61%
+- pre-buzz signed vertical speed of +0.224 m/s for A and -0.290 m/s for B
+  (P = 0.0204), pause chi-square = 1.02 (P = 0.796), and 50%/61%
   A/B oscillatory/persistent geometry; and
-- the current point Markov probabilities. The public bootstrap now resamples
-  an ordered list of dives so duplicate draws are retained, correcting a bug
-  in `azores_extended.py`, which converted each resample to a dictionary and
-  discarded duplicates before calculating confidence intervals.
+- the point Markov probabilities and 95% intervals from 2,000 bootstrap
+  replicates that resample an ordered list of dives, retaining duplicate draws.
 
-The following manuscript discrepancies remain and should not be glossed over:
+The manuscript now describes the echo window exactly as implemented: from
+10 s before buzz onset through 10 s after buzz end. Nearest range is the
+minimum detected prey range over this same full interval. The main-text and SI
+statistics use the final 28/28 labels and corrected bootstrap figure.
 
-1. The text and captions call the primary analysis a balanced 29/29 partition
-   of all 58 buzzes. The operative code and its reported P values use
-   29 A/28 B/1 unclassified. A genuinely disjoint, globally balanced 29/29
-   assignment is exported as a sensitivity: prey-count P = 0.0313, depth
-   P = 0.0130 and d = 1.160, and nearest-range P = 0.833. It is not the
-   manuscript's result-producing analysis.
-2. The code defines the echo window as `buzz start - 10 s` through `buzz end +
-   10 s`, whereas the manuscript says a window around buzz onset. Likewise,
-   nearest range is the minimum over that full window, not necessarily the
-   range at buzz start. Either revise the prose to match the operative
-   calculation or deliberately change and rerun it.
-3. The supplementary Markov point estimates are reproduced, but the published
-   bootstrap intervals came from the duplicate-dropping implementation. The
-   figure and caption should be regenerated from the corrected resampling
-   procedure before treating its confidence intervals as reported values.
-4. `azores_analysis.py` is a legacy whole-record analysis with hard-coded
-   35/35 labels spanning the 108-buzz, 27-dive record. It is not the
-   manuscript's 11-dive analysis and should not be used as its production
-   entry point.
-5. The robustness comment in `azores_extended.py` says that 20, 30, and 35
-   events per corner are tested, whereas the executable loop uses 20, 25, and
-   29. The public result table records the values actually run by the code.
+The original folder also contains `azores_analysis.py`, a legacy whole-record
+analysis with hard-coded 35/35 labels, and a stale tracked
+`figure_extended.pdf`. Neither is a manuscript-producing source. Executing the
+updated `azores_extended.py` from commit `a74bab4` regenerates a figure that is
+pixel-identical to the current Overleaf SI asset. The production implementation
+and registered results in this repository are the release-facing source of
+truth.
 
 ## L\'evy fitter named in Methods (resolved)
 

@@ -71,7 +71,7 @@ def test_azores_source_finder_reports_all_default_locations(tmp_path):
     assert "Clean_notebooks_figures/Azores_code" in str(error.value)
 
 
-def test_nearest_corner_overlap_is_explicit_not_silently_balanced():
+def test_nearest_corner_boundary_ties_remain_unclassified():
     features = pd.DataFrame(
         {
             "distance_to_a": [0.1, 0.2, 0.8],
@@ -79,8 +79,8 @@ def test_nearest_corner_overlap_is_explicit_not_silently_balanced():
         }
     )
     labels = classify_nearest_corners(features, n_per_corner=2)
-    assert labels["operative_type"].tolist() == ["A", "A", "B"]
-    assert labels["nearest_corner_overlap"].sum() == 1
+    assert labels["operative_type"].tolist() == ["A", "unclassified", "B"]
+    assert labels["nearest_corner_tie"].tolist() == [False, True, False]
 
 
 def test_balanced_assignment_is_disjoint_and_complete():
@@ -102,12 +102,12 @@ def test_transition_counter_preserves_repeated_bootstrap_draws():
 
 def test_derived_azores_regression_targets_are_registered():
     summary = json.loads((ROOT / "results" / "azores" / "azores_summary.json").read_text())
-    assert summary["operative_counts"] == {"A": 29, "B": 28, "unclassified": 1}
-    assert summary["nearest_corner_overlap"] == 1
-    assert summary["pre_buzz_vertical_speed"]["p_value"] == pytest.approx(0.0142764679)
+    assert summary["operative_counts"] == {"A": 28, "B": 28, "unclassified": 2}
+    assert summary["nearest_corner_ties"] == 2
+    assert summary["pre_buzz_vertical_speed"]["p_value"] == pytest.approx(0.0204092687)
     contrasts = pd.read_csv(ROOT / "results" / "azores" / "azores_prey_contrasts.csv")
     operative_depth = contrasts.query(
         "classification == 'operative' and metric == 'mean_prey_depth_m'"
     ).iloc[0]
-    assert operative_depth["p_value"] == pytest.approx(0.0028154478)
-    assert operative_depth["cohens_d_a_minus_b"] == pytest.approx(1.3869251839)
+    assert operative_depth["p_value"] == pytest.approx(0.0040979968)
+    assert operative_depth["cohens_d_a_minus_b"] == pytest.approx(1.3426902527)
