@@ -13,9 +13,8 @@ figure based on dive-local buzz times and registered GMM labels. The legacy
 eight-whale null figure is forensic provenance and is not pipeline-generated.
 
 The current pipeline does not claim pixel-identical recomposition of the final
-multi-panel manuscript artwork, the location-bearing regional map, or CETI path
-panels whose reconstructed trajectories have not been approved for release.
-Azores manuscript components are generated in memory by the checksummed local-
-input notebook; they are not silently regenerated when those external CC0
-source files are absent. Those boundaries are documented rather than covered
-with copied image assets.
+multi-panel manuscript artwork or the location-bearing regional map. The CETI
+release is buzz-level and therefore excludes reconstructed-path artwork and the
+legacy high-frequency roll trace. Azores manuscript components are generated
+in memory by the checksummed local-input notebook; they are not silently
+regenerated when those external CC0 source files are absent.

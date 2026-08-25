@@ -43,6 +43,7 @@ The frozen tree passes the complete automated test suite and
 bioRxiv redline compile without unresolved citations or references and were
 visually inspected after rendering.
 
-This technical freeze records a reproducible analysis state. It does not
-replace data-owner approval, licence selection, or the final archival DOI and
-manuscript--artifact checksum crosswalk.
+This technical freeze records a reproducible analysis state. The result map
+provides the manuscript--analysis crosswalk, and the submission release package
+records file checksums. Data-owner approval, licence selection, and creation of
+an archival DOI remain external project decisions; see `release_readiness.md`.

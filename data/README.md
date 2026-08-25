@@ -1,14 +1,14 @@
 # Data directory
 
-This directory contains only public-source instructions and approved derived
-inputs. It must conform to the top-level [data policy](../DATA_POLICY.md).
+This directory contains only public-source instructions and pseudonymized
+derived inputs prepared for data-owner review. It must conform to the top-level
+[data policy](../DATA_POLICY.md).
 
 ## Layout
 
 - `dswp/`: pseudonymized reconstructed trajectories and buzz-level
   measurements for the primary dataset;
-- `ceti2024/`: derived buzz information for the independent 2024 validation
-  (the reviewed trajectory bundle remains a release gate);
+- `ceti2024/`: derived buzz information for the independent 2024 validation;
 - `azores/`: authoritative open-data citation, retrieval, checksum, and
   preprocessing documentation;
 - `manifest.csv`: inventory and checksums for every distributed data file.

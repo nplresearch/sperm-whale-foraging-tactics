@@ -11,9 +11,9 @@ The repository distinguishes three levels:
    from raw tags. This level is intentionally not part of the public release.
 
 This separation is important: the repository reproduces paper results from
-reviewed derived or authoritative open inputs without implying that restricted
-raw records are public. Consult the top-level status matrix and
-`docs/known_issues.md` for remaining manuscript decisions and data-steward gates.
+derived or authoritative open inputs without implying that restricted raw
+records are public. Consult `docs/result_map.md` for the analysis crosswalk and
+`docs/release_readiness.md` for the short public-release checklist.
 
 ## Set up the environment
 

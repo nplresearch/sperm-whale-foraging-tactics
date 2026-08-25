@@ -11,8 +11,9 @@ freeze. The spatial-recurrence/comeback discrepancy is accepted as a documented
 production exception: the manuscript-producing legacy calculation is retained
 without being conflated with the registered-current sensitivity analysis.
 
-Release-only tasks, including the CETI roll panel, steward approval, artifact
-crosswalk and archival freeze, are numbered separately in
+The CETI and map boundaries and the artifact crosswalk are now resolved by the
+documented release scope. The only remaining public-release actions are the
+human approvals and archival DOI listed in `release_readiness.md` and
 `submission_reconciliation.md`.
 
 ## Notebook touchpoint index

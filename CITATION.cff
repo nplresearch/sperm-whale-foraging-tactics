@@ -1,0 +1,58 @@
+cff-version: 1.2.0
+message: >-
+  Please cite the accompanying manuscript and the archived repository version.
+  The preprint and repository DOIs will be added when those records are minted.
+title: "Sperm whale foraging combines persistent search with flexible prey-capture tactics: analysis code and derived data"
+type: software
+version: 0.1.0
+repository-code: "https://github.com/nplresearch/sperm-whale-foraging-tactics"
+authors:
+  - given-names: Lorenzo
+    family-names: Zaffina
+  - given-names: Corrado
+    family-names: Monti
+  - given-names: Simone
+    family-names: Poetto
+  - given-names: Maxime
+    family-names: Lucas
+  - given-names: Henrique João Machado
+    family-names: Borges
+  - given-names: Raj
+    family-names: Deshpande
+  - given-names: Pernille
+    family-names: Tønnesen
+  - given-names: David F.
+    family-names: Gruber
+  - given-names: Shane
+    family-names: Gero
+  - given-names: Andrea
+    family-names: Santoro
+  - given-names: Giovanni
+    family-names: Petri
+preferred-citation:
+  type: article
+  title: "Sperm whale foraging combines persistent search with flexible prey-capture tactics"
+  year: 2026
+  authors:
+    - given-names: Lorenzo
+      family-names: Zaffina
+    - given-names: Corrado
+      family-names: Monti
+    - given-names: Simone
+      family-names: Poetto
+    - given-names: Maxime
+      family-names: Lucas
+    - given-names: Henrique João Machado
+      family-names: Borges
+    - given-names: Raj
+      family-names: Deshpande
+    - given-names: Pernille
+      family-names: Tønnesen
+    - given-names: David F.
+      family-names: Gruber
+    - given-names: Shane
+      family-names: Gero
+    - given-names: Andrea
+      family-names: Santoro
+    - given-names: Giovanni
+      family-names: Petri

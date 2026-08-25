@@ -57,10 +57,9 @@ kinematic summaries reproduce the corresponding per-buzz comparisons.
 Do not add audio/waveforms, pressure, accelerometer/gyroscope/magnetometer
 streams, source MATLAB structs, GPS/locations, original deployment or animal
 identifiers, demographics, raw recording timestamps, private paths, or any
-unreviewed columns. Reconstructed trajectories are handled by a separate
-reviewed trajectory release; this validation table does not duplicate them.
-That CETI trajectory bundle is not yet available locally and is an explicit
-release gate.
+unreviewed columns. Version 0.1 is intentionally scoped to the buzz-level
+validation and does not distribute CETI reconstructed trajectories. Any later
+trajectory release would be a separately reviewed data version.
 
 ### Creating the reviewed table
 

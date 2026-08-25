@@ -80,3 +80,9 @@ For a paper release, record:
 
 This makes later corrections possible without silently changing the data or
 analysis associated with the published article.
+
+The production analysis commit is `c144ae3`, tagged
+`production-code-2026-08-25`, and the paired manuscript commit is `9e4ee80`.
+The submission package contains SHA-256 manifests for the exported PDFs and
+source archives. Repository and manuscript DOIs will be added when those
+external records are created.

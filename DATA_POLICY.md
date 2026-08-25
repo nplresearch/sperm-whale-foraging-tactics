@@ -4,11 +4,11 @@
 
 The release goal is to reproduce the paper's analyses while keeping the
 original biologging and field data out of a public GitHub release. At the
-defined public boundary, a result is reproducible only when it can be
-regenerated from documented, publication-approved derived inputs; upstream
-signal processing from raw tag files is deliberately out of scope. The current
-release candidate has explicit gaps, particularly the Azores result-producing
-analysis and the CETI trajectory bundle, recorded in `docs/known_issues.md`.
+defined public boundary, a result is reproducible when it can be regenerated
+from documented, publication-approved derived inputs; upstream signal
+processing from raw tag files is deliberately out of scope. The Azores
+analysis is recovered from checksummed open inputs, and the CETI component is
+explicitly scoped to the buzz-level validation.
 
 ## Included
 
@@ -57,9 +57,10 @@ boundary.
 
 ### CETI 2024
 
-The release may contain only pseudonymized reconstructed trajectories and
-derived buzz information. It must not contain the source tag structures,
-audio, raw sensor channels, GPS, field metadata, or an identifier crosswalk.
+This release contains only pseudonymized derived buzz information. Reviewed
+reconstructed paths are not part of the current release boundary. The release
+must not contain source tag structures, audio, raw sensor channels, GPS, field
+metadata, or an identifier crosswalk.
 
 ### Azores
 

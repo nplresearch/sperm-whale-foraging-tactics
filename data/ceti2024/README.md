@@ -10,10 +10,7 @@ The table was created with
 `validation.ceti2024.export_sanitized_ceti2024`, which uses a strict column
 allowlist and never writes or returns an identifier crosswalk.
 
-The corresponding reconstructed CETI 2024 trajectory arrays are not yet
-present in the working release because no reviewed derived path bundle was
-available locally. They remain a release gate: when supplied by the data
-steward, they must use the same local-coordinate numeric-only NPZ format as the
-DSWP paths and contain no raw movement channels. The public buzz-level
-validation currently runs in full; heading/path panels requiring the missing
-paths cannot be independently rebuilt from this directory.
+This release is intentionally scoped to the buzz-level validation. It does not
+distribute reconstructed CETI paths or the legacy high-frequency roll trace.
+Any later path release would be a new, separately reviewed data version using
+local-coordinate numeric-only arrays and containing no raw movement channels.
