@@ -245,7 +245,7 @@ For every main and supplementary figure/table, record:
 
 **Resolution.** `docs/result_map.md` maps every reported analysis and panel to
 its public input, implementation, output, and scope. The production freeze
-records analysis commit `c144ae3` and manuscript commit `9e4ee80`; the
+records analysis commit `c144ae3` and manuscript commit `435c3d0`; the
 submission package adds SHA-256 manifests for exported artifacts. The archival
 DOI is an external record and will be inserted after it is minted.
 

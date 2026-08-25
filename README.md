@@ -76,7 +76,7 @@ making it the entry point for readers.
 ## Version and citation
 
 The frozen analysis underlying the current production manuscript is tagged
-`production-code-2026-08-25`; the paired manuscript commit is `9e4ee80`.
+`production-code-2026-08-25`; the paired manuscript commit is `435c3d0`.
 Citation metadata are provided in [`CITATION.cff`](CITATION.cff). Add the
 bioRxiv or journal DOI to that file once the manuscript record exists, and add
 the repository archival DOI after the public archive is minted.
