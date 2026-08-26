@@ -4,11 +4,13 @@ The four CC0 MATLAB files remain external, checksummed inputs.  This module
 loads them locally, reproduces the manuscript-facing derived statistics, and
 exports only event-level derived values and aggregate results.
 """
+
 from __future__ import annotations
-from pathlib import Path
+
 import hashlib
 import json
 import urllib.request
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -23,8 +25,10 @@ from scipy.stats import (
 DRYAD_DOI = "10.5061/dryad.tqjq2bvwg"
 DRYAD_LANDING_PAGE = "https://doi.org/10.5061/dryad.tqjq2bvwg"
 LICENSE = "CC0 1.0 (Dryad data-publication terms)"
-CITATION = ("Tonnesen, P. (2020). The long-range echo scene of the sperm whale biosonar "
-            "[Dataset]. Dryad. https://doi.org/10.5061/dryad.tqjq2bvwg")
+CITATION = (
+    "Tonnesen, P. (2020). The long-range echo scene of the sperm whale biosonar "
+    "[Dataset]. Dryad. https://doi.org/10.5061/dryad.tqjq2bvwg"
+)
 
 AZORES_FILES = {
     "sw17_196a_buzz.mat": {
@@ -68,10 +72,7 @@ PAUSE_LABELS = ("Short", "Medium", "Long", "Very long")
 def source_manifest() -> pd.DataFrame:
     """Return the pinned four-file manifest from Dryad version 1."""
     return pd.DataFrame(
-        [
-            {"filename": filename, **metadata}
-            for filename, metadata in AZORES_FILES.items()
-        ]
+        [{"filename": filename, **metadata} for filename, metadata in AZORES_FILES.items()]
     )
 
 
@@ -81,11 +82,14 @@ def fetch_azores_file(url: str, destination: str | Path, sha256: str | None = No
     URLs are deliberately supplied by the caller after inspecting Dryad's current
     API/landing-page file list: this avoids silently pinning a brittle CDN URL.
     """
-    target = Path(destination); target.parent.mkdir(parents=True, exist_ok=True)
+    target = Path(destination)
+    target.parent.mkdir(parents=True, exist_ok=True)
     urllib.request.urlretrieve(url, target)
     if sha256:
         got = hashlib.sha256(target.read_bytes()).hexdigest()
-        if got != sha256: target.unlink(missing_ok=True); raise ValueError("Azores checksum mismatch")
+        if got != sha256:
+            target.unlink(missing_ok=True)
+            raise ValueError("Azores checksum mismatch")
     return target
 
 
@@ -100,10 +104,7 @@ def validate_azores_sources(directory: str | Path) -> pd.DataFrame:
         size = path.stat().st_size
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         if size != expected["size_bytes"] or digest != expected["sha256"]:
-            raise ValueError(
-                f"Dryad source mismatch for {filename}: "
-                f"size={size}, sha256={digest}"
-            )
+            raise ValueError(f"Dryad source mismatch for {filename}: size={size}, sha256={digest}")
         rows.append(
             {
                 "filename": filename,
@@ -177,9 +178,7 @@ def load_mat_struct_table(
     contents = loadmat(path, squeeze_me=True, struct_as_record=False)
     if key not in contents:
         public_keys = sorted(name for name in contents if not name.startswith("__"))
-        raise KeyError(
-            f"Expected MATLAB variable {key!r}; found {public_keys}"
-        )
+        raise KeyError(f"Expected MATLAB variable {key!r}; found {public_keys}")
     value = contents[key]
     items = np.atleast_1d(value).ravel()
     rows = []
@@ -187,9 +186,7 @@ def load_mat_struct_table(
         fields = getattr(item, "_fieldnames", None)
         if fields is None:
             raise TypeError(f"{key!r} is not a MATLAB struct array")
-        rows.append(
-            {field: _plain_value(getattr(item, field)) for field in fields}
-        )
+        rows.append({field: _plain_value(getattr(item, field)) for field in fields})
     return pd.DataFrame(rows)
 
 
@@ -227,8 +224,10 @@ def find_plateau_phase(
     if starts.size == 0:
         return start, 1
     rates = np.asarray(
-        [np.count_nonzero((clicks >= value) & (clicks < value + window_size)) / window_size
-         for value in starts],
+        [
+            np.count_nonzero((clicks >= value) & (clicks < value + window_size)) / window_size
+            for value in starts
+        ],
         dtype=float,
     )
     if smooth_window > 1 and rates.size >= smooth_window:
@@ -300,7 +299,9 @@ def extract_azores_buzz_features(sources: dict[str, pd.DataFrame]) -> pd.DataFra
     if len(features) != 58:
         raise ValueError(f"Expected 58 daytime buzzes; found {len(features)}")
     features["ramp_rank"] = (rankdata(features["ramp_up_duration_s"]) - 1) / (len(features) - 1)
-    features["speed_rank"] = (rankdata(features["avg_vertical_speed_m_s"]) - 1) / (len(features) - 1)
+    features["speed_rank"] = (rankdata(features["avg_vertical_speed_m_s"]) - 1) / (
+        len(features) - 1
+    )
     features["distance_to_a"] = np.hypot(features["ramp_rank"], features["speed_rank"])
     features["distance_to_b"] = np.hypot(1 - features["ramp_rank"], 1 - features["speed_rank"])
     return features
@@ -413,7 +414,9 @@ def _robustness_table(features: pd.DataFrame, echo_metrics: pd.DataFrame) -> pd.
     rows = []
     for n_per_corner in (20, 25, 29):
         labels = classify_nearest_corners(features, n_per_corner)
-        subset = joined[["dive_no", "buzz_no_in_dive", "prey_echo_count", "mean_prey_depth_m"]].merge(
+        subset = joined[
+            ["dive_no", "buzz_no_in_dive", "prey_echo_count", "mean_prey_depth_m"]
+        ].merge(
             labels[["dive_no", "buzz_no_in_dive", "operative_type"]],
             on=["dive_no", "buzz_no_in_dive"],
             validate="one_to_one",
@@ -428,15 +431,23 @@ def _robustness_table(features: pd.DataFrame, echo_metrics: pd.DataFrame) -> pd.
                     "analysis": "corner_split",
                     "n_per_corner": n_per_corner,
                     "metric": "mean_prey_depth_m",
-                    "estimate": float(mannwhitneyu(a_depth, b_depth, alternative="two-sided").statistic),
-                    "p_value": float(mannwhitneyu(a_depth, b_depth, alternative="two-sided").pvalue),
+                    "estimate": float(
+                        mannwhitneyu(a_depth, b_depth, alternative="two-sided").statistic
+                    ),
+                    "p_value": float(
+                        mannwhitneyu(a_depth, b_depth, alternative="two-sided").pvalue
+                    ),
                 },
                 {
                     "analysis": "corner_split",
                     "n_per_corner": n_per_corner,
                     "metric": "prey_echo_count",
-                    "estimate": float(mannwhitneyu(a_count, b_count, alternative="two-sided").statistic),
-                    "p_value": float(mannwhitneyu(a_count, b_count, alternative="two-sided").pvalue),
+                    "estimate": float(
+                        mannwhitneyu(a_count, b_count, alternative="two-sided").statistic
+                    ),
+                    "p_value": float(
+                        mannwhitneyu(a_count, b_count, alternative="two-sided").pvalue
+                    ),
                 },
             ]
         )
@@ -461,8 +472,15 @@ def _signed_pre_buzz_speed(features: pd.DataFrame, dives: pd.DataFrame) -> pd.Da
         dive = dives.iloc[int(event["dive_no"]) - 1]
         depths = np.asarray(dive["depth_data"], dtype=float)
         sample_rate_hz = float(dive["depth_fs"])
-        start_index = int(max(0, (event["_buzz_start_s"] - PRE_BUZZ_WINDOW_S - dive["dive_start"]) * sample_rate_hz))
-        end_index = int(min(len(depths) - 1, (event["_buzz_start_s"] - dive["dive_start"]) * sample_rate_hz))
+        start_index = int(
+            max(
+                0,
+                (event["_buzz_start_s"] - PRE_BUZZ_WINDOW_S - dive["dive_start"]) * sample_rate_hz,
+            )
+        )
+        end_index = int(
+            min(len(depths) - 1, (event["_buzz_start_s"] - dive["dive_start"]) * sample_rate_hz)
+        )
         segment = depths[start_index : end_index + 1]
         speed = np.diff(segment) * sample_rate_hz
         if speed.size >= 3:
@@ -519,9 +537,9 @@ def _transition_probabilities(counts: dict[str, dict[str, int]]) -> dict[str, di
 
 def _markov_table(features: pd.DataFrame, n_boot: int, random_seed: int = 42) -> pd.DataFrame:
     sequences = [
-        group.sort_values("buzz_no_in_dive").loc[
-            lambda table: table["operative_type"].isin(["A", "B"]), "operative_type"
-        ].tolist()
+        group.sort_values("buzz_no_in_dive")
+        .loc[lambda table: table["operative_type"].isin(["A", "B"]), "operative_type"]
+        .tolist()
         for _, group in features.groupby("dive_no", sort=True)
     ]
     sequences = [sequence for sequence in sequences if sequence]
@@ -560,11 +578,15 @@ def _vertical_geometry(features: pd.DataFrame, dives: pd.DataFrame) -> pd.DataFr
         sample_rate_hz = float(dive["depth_fs"])
 
         def slope(start_s: float, end_s: float) -> float:
-            start = int(np.clip(round((start_s - dive["dive_start"]) * sample_rate_hz), 0, len(depths)))
+            start = int(
+                np.clip(round((start_s - dive["dive_start"]) * sample_rate_hz), 0, len(depths))
+            )
             end = int(np.clip(round((end_s - dive["dive_start"]) * sample_rate_hz), 0, len(depths)))
             if end - start < 2:
                 return float("nan")
-            return float(linregress(np.arange(end - start) / sample_rate_hz, depths[start:end]).slope)
+            return float(
+                linregress(np.arange(end - start) / sample_rate_hz, depths[start:end]).slope
+            )
 
         before = slope(event["_click_first_s"] - PRE_BUZZ_WINDOW_S, event["_click_first_s"])
         after = slope(event["_click_last_s"], event["_click_last_s"] + POST_BUZZ_WINDOW_S)
@@ -584,8 +606,10 @@ def _vertical_geometry(features: pd.DataFrame, dives: pd.DataFrame) -> pd.DataFr
                 "buzz_no_in_dive": int(event["buzz_no_in_dive"]),
                 "vertical_geometry": geometry,
                 "geometry_group": (
-                    "oscillatory" if geometry in {"DU", "UD"}
-                    else "persistent" if geometry in {"DD", "UU"}
+                    "oscillatory"
+                    if geometry in {"DU", "UD"}
+                    else "persistent"
+                    if geometry in {"DD", "UU"}
                     else "unavailable"
                 ),
             }
@@ -594,7 +618,9 @@ def _vertical_geometry(features: pd.DataFrame, dives: pd.DataFrame) -> pd.DataFr
 
 
 def _pause_summary(events: pd.DataFrame) -> dict[str, float | int]:
-    classified = events.loc[events["operative_type"].isin(["A", "B"]) & (events["pause_category"] != "terminal")]
+    classified = events.loc[
+        events["operative_type"].isin(["A", "B"]) & (events["pause_category"] != "terminal")
+    ]
     contingency = pd.crosstab(classified["operative_type"], classified["pause_category"]).reindex(
         index=["A", "B"], columns=PAUSE_LABELS, fill_value=0
     )
@@ -622,12 +648,26 @@ def run_azores_validation(
     exported.
     """
     sources = load_azores_sources(directory)
-    features = classify_balanced_assignment(classify_nearest_corners(extract_azores_buzz_features(sources)))
+    features = classify_balanced_assignment(
+        classify_nearest_corners(extract_azores_buzz_features(sources))
+    )
     echo_metrics = _echo_metrics_for_features(features, sources["echo"])
     events = features.merge(echo_metrics, on=["dive_no", "buzz_no_in_dive"], validate="one_to_one")
-    events = events.merge(_signed_pre_buzz_speed(events, sources["diving"]), on=["dive_no", "buzz_no_in_dive"], validate="one_to_one")
-    events = events.merge(_pause_categories(events, sources["whale"]), on=["dive_no", "buzz_no_in_dive"], validate="one_to_one")
-    events = events.merge(_vertical_geometry(events, sources["diving"]), on=["dive_no", "buzz_no_in_dive"], validate="one_to_one")
+    events = events.merge(
+        _signed_pre_buzz_speed(events, sources["diving"]),
+        on=["dive_no", "buzz_no_in_dive"],
+        validate="one_to_one",
+    )
+    events = events.merge(
+        _pause_categories(events, sources["whale"]),
+        on=["dive_no", "buzz_no_in_dive"],
+        validate="one_to_one",
+    )
+    events = events.merge(
+        _vertical_geometry(events, sources["diving"]),
+        on=["dive_no", "buzz_no_in_dive"],
+        validate="one_to_one",
+    )
     operative = _contrast_table(events, "operative_type")
     balanced = _contrast_table(events, "balanced_type")
     robustness = _robustness_table(features, echo_metrics)
@@ -642,7 +682,9 @@ def run_azores_validation(
         .rename("n")
         .reset_index()
     )
-    geometry["proportion"] = geometry["n"] / geometry.groupby("operative_type")["n"].transform("sum")
+    geometry["proportion"] = geometry["n"] / geometry.groupby("operative_type")["n"].transform(
+        "sum"
+    )
     summary: dict[str, object] = {
         "n_dives": int(len(sources["diving"])),
         "n_buzzes": int(len(sources["buzz"])),
@@ -663,15 +705,32 @@ def run_azores_validation(
         output = Path(output_directory)
         output.mkdir(parents=True, exist_ok=True)
         public_columns = [
-            "dive_no", "buzz_no_in_dive", "ramp_up_duration_s", "buzz_duration_s",
-            "avg_vertical_speed_m_s", "n_plateau_regions", "ramp_rank", "speed_rank",
-            "distance_to_a", "distance_to_b", "operative_type", "nearest_corner_tie",
-            "balanced_type", "prey_echo_count", "nearest_prey_range_m", "mean_prey_depth_m",
-            "pre_buzz_vertical_speed_m_s", "post_buzz_pause_s", "pause_category",
-            "vertical_geometry", "geometry_group",
+            "dive_no",
+            "buzz_no_in_dive",
+            "ramp_up_duration_s",
+            "buzz_duration_s",
+            "avg_vertical_speed_m_s",
+            "n_plateau_regions",
+            "ramp_rank",
+            "speed_rank",
+            "distance_to_a",
+            "distance_to_b",
+            "operative_type",
+            "nearest_corner_tie",
+            "balanced_type",
+            "prey_echo_count",
+            "nearest_prey_range_m",
+            "mean_prey_depth_m",
+            "pre_buzz_vertical_speed_m_s",
+            "post_buzz_pause_s",
+            "pause_category",
+            "vertical_geometry",
+            "geometry_group",
         ]
         events[public_columns].to_csv(output / "azores_derived_buzz_metrics.csv", index=False)
-        pd.concat([operative, balanced], ignore_index=True).to_csv(output / "azores_prey_contrasts.csv", index=False)
+        pd.concat([operative, balanced], ignore_index=True).to_csv(
+            output / "azores_prey_contrasts.csv", index=False
+        )
         robustness.to_csv(output / "azores_robustness.csv", index=False)
         markov.to_csv(output / "azores_markov_transitions.csv", index=False)
         geometry.to_csv(output / "azores_vertical_geometry.csv", index=False)

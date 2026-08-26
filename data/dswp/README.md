@@ -95,23 +95,21 @@ The recurrence analysis operates at deployment scale because returns may span
 multiple dives. These 30 compact archives contain the exact 20-s subsample used
 by the result-producing comeback notebook. Each archive has only two float64
 arrays: relative deployment time (`time_s`) and local reconstructed position
-(`xyz_m`). They use the legacy constant-speed reconstruction because that is
-what produced the current SI result; they are distinct from the selected
+(`xyz_m`). They use the constant-speed reconstruction used by the manuscript
+recurrence analysis; they are distinct from the selected
 pitch-adaptive dive paths used by the main trajectory, straightness, and
 energetic analyses.
 
-### `comeback_legacy_labels.csv`
+### `comeback_manuscript_labels.csv`
 
-This two-column table maps opaque buzz event IDs to the earlier GMM-label
-version used by the currently archived comeback forest plot. It is retained
-only so the reported OR 1.11 result is exactly reproducible. The batch pipeline
-also recomputes the same association with the registered current labels. The
-difference is a known manuscript decision, not a robustness result; see
-`docs/known_issues.md`.
+This two-column table maps opaque buzz event IDs to the tactic labels used by
+the manuscript comeback forest plot, allowing the reported OR 1.11 result to
+be reproduced. The batch pipeline also computes the association with the
+current classifier as a labelled sensitivity.
 
 ## Important analytical note
 
 The reported GMM counts use `avg_speed_3d_m_s`, the classifier variable from
 the original constant-speed reconstruction. The pitch-adaptive variable is
 also released because it is the trajectory method selected for downstream
-path, straightness, and energetic analyses. See `docs/known_issues.md`.
+path, straightness, and energetic analyses.

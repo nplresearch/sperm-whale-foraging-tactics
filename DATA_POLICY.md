@@ -81,8 +81,10 @@ reviewed explicitly.
 - Round values no more finely than the analysis requires.
 - Keep input and generated-output directories separate.
 
-## Release gate
+## Release validation
 
-`python scripts/check_release_safety.py` must pass before any commit is pushed
-to a public remote. Passing the automated check is necessary but not sufficient:
-a data owner must still review the final files and schemas.
+`python scripts/check_release_safety.py` checks every release for raw-data file
+types, unsafe fields, identifying paths, embedded notebook outputs, and opaque
+arrays. The v1 DSWP derived tables and local-coordinate trajectories were
+reviewed and approved by the data owner for public release. Raw DSWP records
+remain excluded.

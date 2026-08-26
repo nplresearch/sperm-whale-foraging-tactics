@@ -11,6 +11,6 @@ The table was created with
 allowlist and never writes or returns an identifier crosswalk.
 
 This release is intentionally scoped to the buzz-level validation. It does not
-distribute reconstructed CETI paths or the legacy high-frequency roll trace.
+distribute reconstructed CETI paths or the high-frequency roll time course.
 Any later path release would be a new, separately reviewed data version using
 local-coordinate numeric-only arrays and containing no raw movement channels.

@@ -12,8 +12,7 @@ The repository distinguishes three levels:
 
 This separation is important: the repository reproduces paper results from
 derived or authoritative open inputs without implying that restricted raw
-records are public. Consult `docs/result_map.md` for the analysis crosswalk and
-`docs/release_readiness.md` for the short public-release checklist.
+records are public. Consult `docs/result_map.md` for the analysis crosswalk.
 
 ## Set up the environment
 
@@ -75,7 +74,7 @@ Tests cover:
 - input schemas and identifier rules;
 - deterministic classification and summary statistics;
 - trajectory and sequence calculations on known examples;
-- agreement between regenerated and archived numerical summaries, with
+- agreement between regenerated and registered numerical summaries, with
   explicitly documented tolerances; and
 - the public-release data boundary.
 

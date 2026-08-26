@@ -1,16 +1,15 @@
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 EXPECTED_NOTEBOOKS = (
-    "notebooks/paper/00_manuscript_reproduction_status.ipynb",
+    "notebooks/paper/00_manuscript_reproduction.ipynb",
     "notebooks/dswp/00_dataset_and_buzz_construction.ipynb",
     "notebooks/dswp/01_event_level_analysis.ipynb",
     "notebooks/dswp/02_energy_model_derivation.ipynb",
     "notebooks/dswp/03_manuscript_figure_components.ipynb",
-    "notebooks/dswp/04_comeback_reproduction_audit.ipynb",
+    "notebooks/dswp/04_comeback_analysis.ipynb",
     "notebooks/trajectory/01_reconstructed_trajectory_analysis.ipynb",
     "notebooks/trajectory/02_manuscript_trajectory_figures.ipynb",
     "notebooks/validation/01_azores_open_data.ipynb",
@@ -36,15 +35,15 @@ def test_manuscript_notebook_inventory_is_complete_and_clean():
                 assert cell.get("outputs", []) == []
 
 
-def test_decision_sensitive_notebooks_name_known_issue_touchpoints():
+def test_method_sensitive_notebooks_document_production_choices():
     sensitive = (
-        "notebooks/paper/00_manuscript_reproduction_status.ipynb",
+        "notebooks/paper/00_manuscript_reproduction.ipynb",
         "notebooks/dswp/00_dataset_and_buzz_construction.ipynb",
         "notebooks/dswp/03_manuscript_figure_components.ipynb",
-        "notebooks/dswp/04_comeback_reproduction_audit.ipynb",
+        "notebooks/dswp/04_comeback_analysis.ipynb",
         "notebooks/trajectory/02_manuscript_trajectory_figures.ipynb",
         "notebooks/validation/04_azores_manuscript_figures.ipynb",
         "notebooks/validation/05_ceti2024_manuscript_figures.ipynb",
     )
     for relative in sensitive:
-        assert "Known issue touchpoint" in (ROOT / relative).read_text(), relative
+        assert "Production note" in (ROOT / relative).read_text(), relative

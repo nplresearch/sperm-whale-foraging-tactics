@@ -9,6 +9,7 @@ Clauset-style cutoff scan, and 50 logarithmically spaced MSD lags.
 The fitted distributions are described as *Lévy-like*.  A heavy tail and a
 superdiffusive MSD do not establish a unique generative or optimal search rule.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -16,7 +17,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy import stats
-
 
 FS_HZ = 25.0
 MIN_MAX_DEPTH_M = 600.0
@@ -26,9 +26,7 @@ MIN_STEPS = 30
 TURN_THRESHOLD_RAD = np.pi / 6
 
 
-def turning_points(
-    xyz: np.ndarray, threshold_rad: float = TURN_THRESHOLD_RAD
-) -> np.ndarray:
+def turning_points(xyz: np.ndarray, threshold_rad: float = TURN_THRESHOLD_RAD) -> np.ndarray:
     """Return production turning-point indices.
 
     A point is retained when the angle between consecutive non-zero
@@ -45,16 +43,12 @@ def turning_points(
     if valid.sum() < 3:
         return np.array([], dtype=int)
     unit = displacement[valid] / norms[valid, None]
-    angles = np.arccos(
-        np.clip(np.einsum("ij,ij->i", unit[:-1], unit[1:]), -1.0, 1.0)
-    )
+    angles = np.arccos(np.clip(np.einsum("ij,ij->i", unit[:-1], unit[1:]), -1.0, 1.0))
     valid_indices = np.where(valid)[0]
     return valid_indices[np.where(angles > threshold_rad)[0] + 1] + 1
 
 
-def step_lengths(
-    xyz: np.ndarray, threshold_rad: float = TURN_THRESHOLD_RAD
-) -> np.ndarray:
+def step_lengths(xyz: np.ndarray, threshold_rad: float = TURN_THRESHOLD_RAD) -> np.ndarray:
     """Euclidean distances between successive detected turning points."""
     xyz = np.asarray(xyz, dtype=float)
     points = turning_points(xyz, threshold_rad)
@@ -113,14 +107,9 @@ def msd_curve(
     if len(xyz) < 4:
         return pd.DataFrame(columns=["lag_samples", "lag_s", "msd_m2"])
     maximum = max(2, int(max_fraction * len(xyz)))
-    lags = np.unique(
-        np.round(np.logspace(0, np.log10(maximum), n_lags)).astype(int)
-    )
+    lags = np.unique(np.round(np.logspace(0, np.log10(maximum), n_lags)).astype(int))
     lags = lags[(lags >= 1) & (lags < len(xyz))]
-    msd = [
-        np.mean(np.sum((xyz[lag:] - xyz[:-lag]) ** 2, axis=1))
-        for lag in lags
-    ]
+    msd = [np.mean(np.sum((xyz[lag:] - xyz[:-lag]) ** 2, axis=1)) for lag in lags]
     return pd.DataFrame(
         {
             "lag_samples": lags,
@@ -142,15 +131,11 @@ def loglog_slope(
     if max_lag_s is not None:
         selected = selected[selected["lag_s"] <= max_lag_s]
     selected = selected[
-        (selected["lag_s"] > 0)
-        & (selected["msd_m2"] > 0)
-        & np.isfinite(selected["msd_m2"])
+        (selected["lag_s"] > 0) & (selected["msd_m2"] > 0) & np.isfinite(selected["msd_m2"])
     ]
     if len(selected) < 4:
         return {"alpha_msd": np.nan, "msd_r2": np.nan, "n_lags": len(selected)}
-    fit = stats.linregress(
-        np.log(selected["lag_s"]), np.log(selected["msd_m2"])
-    )
+    fit = stats.linregress(np.log(selected["lag_s"]), np.log(selected["msd_m2"]))
     return {
         "alpha_msd": float(fit.slope),
         "msd_r2": float(fit.rvalue**2),
@@ -231,9 +216,7 @@ def analyze_release(
         if len(steps) < MIN_STEPS:
             continue
         powerlaw = fit_powerlaw(steps)
-        msd = loglog_slope(
-            msd_curve(foraging, fs_hz=row.sampling_rate_hz)
-        )
+        msd = loglog_slope(msd_curve(foraging, fs_hz=row.sampling_rate_hz))
         per_dive_rows.append(
             {
                 "trajectory_id": row.trajectory_id,
@@ -264,13 +247,11 @@ def analyze_release(
             }
             for name, (lower, upper) in windows.items():
                 upper_effective = (
-                    upper
-                    if upper is not None
-                    else 0.5 * len(nonsurface) / row.sampling_rate_hz
+                    upper if upper is not None else 0.5 * len(nonsurface) / row.sampling_rate_hz
                 )
-                result[name] = loglog_slope(
-                    curve, min_lag_s=lower, max_lag_s=upper_effective
-                )["alpha_msd"]
+                result[name] = loglog_slope(curve, min_lag_s=lower, max_lag_s=upper_effective)[
+                    "alpha_msd"
+                ]
             timescale_rows.append(result)
 
     per_dive = pd.DataFrame(per_dive_rows)
@@ -321,9 +302,7 @@ def analyze_trajectories(
                 "n_samples": len(group),
                 "n_turning_points": len(turning_points(xyz, threshold_rad)),
                 "n_steps": len(steps),
-                "median_step_m": (
-                    float(np.median(steps)) if len(steps) else np.nan
-                ),
+                "median_step_m": (float(np.median(steps)) if len(steps) else np.nan),
                 **fit_powerlaw(steps),
                 **loglog_slope(msd_curve(xyz)),
             }
@@ -345,11 +324,7 @@ def summarize_reconstruction_error(errors: pd.DataFrame) -> pd.DataFrame:
         or not np.isfinite(values["error_m"]).all()
     ):
         raise ValueError("error_m must be finite and non-negative")
-    grouping = (
-        ["reconstruction_method"]
-        if "reconstruction_method" in values
-        else []
-    )
+    grouping = ["reconstruction_method"] if "reconstruction_method" in values else []
     return (
         values.groupby(grouping, dropna=False)["error_m"]
         .agg(

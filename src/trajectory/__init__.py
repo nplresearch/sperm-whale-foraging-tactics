@@ -1,4 +1,5 @@
 """Publication-safe analysis of reconstructed sperm-whale trajectories."""
+
 from .analysis import (
     analyze_release,
     analyze_trajectories,

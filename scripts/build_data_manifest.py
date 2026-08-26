@@ -6,6 +6,7 @@ It inventories actual analytical inputs under ``data/``; documentation and
 ``manifest.csv`` itself are excluded. The output contains only
 repository-relative paths and no private source provenance.
 """
+
 from __future__ import annotations
 
 import csv
@@ -14,7 +15,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -63,11 +63,11 @@ CSV_METADATA = {
         "Pseudonymized coarse deployment-scale reconstruction metadata",
         "dswp-comeback-trajectory-index-v1",
     ),
-    "data/dswp/comeback_legacy_labels.csv": (
+    "data/dswp/comeback_manuscript_labels.csv": (
         "dswp",
-        "archived-result input",
-        "Old-version tactic labels used by the current manuscript forest plot",
-        "dswp-comeback-legacy-labels-v1",
+        "manuscript-result input",
+        "Tactic labels used by the manuscript recurrence analysis",
+        "dswp-comeback-manuscript-labels-v1",
     ),
     "data/ceti2024/buzz_features.csv": (
         "ceti2024",
@@ -106,7 +106,7 @@ def trajectory_rows() -> list[dict]:
                 "schema_version": "dswp-trajectory-npz-v1",
                 "rows": int(xyz.shape[0]),
                 "sha256": sha256(path),
-                "release_status": "steward_review_required",
+                "release_status": "approved_derived_release",
             }
         )
     return rows
@@ -138,7 +138,7 @@ def comeback_trajectory_rows() -> list[dict]:
                 "schema_version": "dswp-comeback-trajectory-npz-v1",
                 "rows": int(len(time_s)),
                 "sha256": sha256(path),
-                "release_status": "steward_review_required",
+                "release_status": "approved_derived_release",
             }
         )
     return rows
@@ -160,7 +160,7 @@ def main() -> int:
                 "schema_version": schema,
                 "rows": int(len(pd.read_csv(path))),
                 "sha256": sha256(path),
-                "release_status": "steward_review_required",
+                "release_status": "approved_derived_release",
             }
         )
     rows.extend(trajectory_rows())
@@ -191,7 +191,7 @@ def main() -> int:
         "release_status",
     ]
     with MANIFEST.open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     print(f"Wrote {len(rows)} records to {MANIFEST.relative_to(ROOT)}")

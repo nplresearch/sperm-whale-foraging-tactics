@@ -1,4 +1,5 @@
 """Compact figure-source plots for the trajectory-scale results."""
+
 from __future__ import annotations
 
 import matplotlib.pyplot as plt

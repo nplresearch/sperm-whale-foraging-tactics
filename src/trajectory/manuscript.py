@@ -1,4 +1,5 @@
 """In-memory manuscript trajectory summaries and figure helpers."""
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -27,9 +28,7 @@ def pooled_steps(index_csv: str | Path) -> np.ndarray:
         if row.max_depth_m < 600:
             continue
         xyz = load_trajectory(Path(index_csv).parent / row.file)
-        steps = step_lengths(
-            xyz[int(row.foraging_start_index) : int(row.foraging_end_index)]
-        )
+        steps = step_lengths(xyz[int(row.foraging_start_index) : int(row.foraging_end_index)])
         if len(steps) >= 30:
             values.append(steps)
     return np.concatenate(values) if values else np.array([], dtype=float)
@@ -37,9 +36,7 @@ def pooled_steps(index_csv: str | Path) -> np.ndarray:
 
 def manuscript_summary(index_csv: str | Path) -> dict:
     per_dive, population, timescale = analyze_release(index_csv)
-    per_individual = per_dive.groupby("individual_id", as_index=False)[
-        ["mu", "alpha_msd"]
-    ].median()
+    per_individual = per_dive.groupby("individual_id", as_index=False)[["mu", "alpha_msd"]].median()
     steps = pooled_steps(index_csv)
     return {
         "per_dive": per_dive,
@@ -138,7 +135,7 @@ def buzz_centred_msd_by_type(
         labelled["buzz_type"] = classify_gmm(labelled)
     else:
         label_column = label_column or (
-            "legacy_buzz_type" if "legacy_buzz_type" in labels else "buzz_type"
+            "manuscript_buzz_type" if "manuscript_buzz_type" in labels else "buzz_type"
         )
         required_labels = {"event_id", label_column}
         if not required_labels.issubset(labels):
@@ -163,10 +160,7 @@ def _paired_rank_biserial(differences: np.ndarray) -> float:
     if not len(differences):
         return 0.0
     ranks = stats.rankdata(np.abs(differences))
-    return float(
-        (ranks[differences > 0].sum() - ranks[differences < 0].sum())
-        / ranks.sum()
-    )
+    return float((ranks[differences > 0].sum() - ranks[differences < 0].sum()) / ranks.sum())
 
 
 def buzz_centred_results(
@@ -185,27 +179,17 @@ def buzz_centred_results(
     ``+-window_s`` interval. Curves are averaged across buzzes within each
     individual and type; paired Wilcoxon tests compare those individual curves.
 
-    ``time_origin='legacy_subtract_dive_start'`` is a forensic mode for the
-    manuscript notebook, which subtracted dive start from already dive-local
-    click times. It is retained only to explain the published eight-whale result.
+    Buzz times are interpreted in the dive-local coordinate system used by the
+    released trajectories.
     """
-    labelled = buzz_centred_msd_by_type(
-        events, labels=labels, label_column=label_column
-    )
+    labelled = buzz_centred_msd_by_type(events, labels=labels, label_column=label_column)
     if not labelled["supported"]:
         return {**labelled, "curves": pd.DataFrame(), "paired_tests": pd.DataFrame()}
     index_path = Path(index_csv)
-    if time_origin not in {"dive_local", "legacy_subtract_dive_start"}:
+    if time_origin != "dive_local":
         raise ValueError("unsupported buzz time origin")
-    if (
-        time_origin == "legacy_subtract_dive_start"
-        and "deployment_buzz_start_s" not in labelled["events"]
-    ):
-        raise ValueError("legacy time-origin audit requires deployment_buzz_start_s")
     index = pd.read_csv(index_path).set_index("trajectory_id")
-    per_individual: dict[str, dict[str, list[np.ndarray]]] = defaultdict(
-        lambda: {"A": [], "B": []}
-    )
+    per_individual: dict[str, dict[str, list[np.ndarray]]] = defaultdict(lambda: {"A": [], "B": []})
     sampling_rates = set()
     classified = labelled["events"][labelled["events"]["buzz_type"].isin(["A", "B"])]
     for trajectory_id, group in classified.groupby("trajectory_id", sort=False):
@@ -218,11 +202,6 @@ def buzz_centred_results(
         xyz = load_trajectory(index_path.parent / metadata.file)
         for event in group.itertuples(index=False):
             center_time_s = float(event.buzz_start_s)
-            if time_origin == "legacy_subtract_dive_start":
-                inferred_dive_start_s = (
-                    float(event.deployment_buzz_start_s) - float(event.buzz_start_s)
-                )
-                center_time_s -= inferred_dive_start_s
             center = int(round(center_time_s * fs_hz))
             if center - half_window < 0 or center + half_window >= len(xyz):
                 continue
@@ -407,14 +386,10 @@ def plot_manuscript_panels(
     fig, axes = plt.subplots(2, 3, figsize=(14, 8))
     per_dive = summary["per_dive"]
     steps = (
-        summary["pooled_steps"]
-        if "pooled_steps" in summary
-        else pooled_steps(summary["index_csv"])
+        summary["pooled_steps"] if "pooled_steps" in summary else pooled_steps(summary["index_csv"])
     )
     if len(steps):
-        axes[0, 0].loglog(
-            np.sort(steps), np.arange(1, len(steps) + 1)[::-1], ".", ms=2
-        )
+        axes[0, 0].loglog(np.sort(steps), np.arange(1, len(steps) + 1)[::-1], ".", ms=2)
         axes[0, 0].set_title("Pooled step-length tail")
     axes[0, 1].hist(per_dive["mu"].dropna(), bins=25)
     axes[0, 1].set_title("Dive-level mu")
@@ -423,9 +398,7 @@ def plot_manuscript_panels(
     axes[1, 0].plot(xyz[:, 0], xyz[:, 1], lw=0.4)
     axes[1, 0].set_title("Representative path (top-down projection)")
     if not surface.empty:
-        surface.groupby("threshold_m")["alpha_msd"].median().plot(
-            ax=axes[1, 1], marker="o"
-        )
+        surface.groupby("threshold_m")["alpha_msd"].median().plot(ax=axes[1, 1], marker="o")
         axes[1, 1].set_title("Surface-threshold sensitivity")
     if buzz_msd and not buzz_msd["curves"].empty:
         curves = buzz_msd["curves"]
@@ -435,7 +408,9 @@ def plot_manuscript_panels(
                 axes[1, 2].plot(group.lag_s, group.msd_m2, color=color, alpha=0.2, lw=0.5)
             median = selected.groupby("lag_s").msd_m2.median()
             axes[1, 2].plot(median.index, median, color=color, lw=2, label=f"Type {buzz_type}")
-        axes[1, 2].set(title="Buzz-centred ensemble MSD", xlabel="Lag from onset (s)", ylabel="MSD (m2)")
+        axes[1, 2].set(
+            title="Buzz-centred ensemble MSD", xlabel="Lag from onset (s)", ylabel="MSD (m2)"
+        )
         axes[1, 2].legend(frameon=False)
     fig.suptitle("Supported manuscript trajectory panels")
     fig.tight_layout()

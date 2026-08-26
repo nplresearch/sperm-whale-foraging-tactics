@@ -20,11 +20,9 @@ module:
 4. flags buzz starts within 120 s of those event intervals; and
 5. applies a deployment-stratified Cochran--Mantel--Haenszel test.
 
-The pipeline writes both the result from the archived label version used in the
-current manuscript figure and the result obtained with the registered current
-classifier. See `docs/known_issues.md`: the two are not interchangeable, and
-the current SI also describes different comeback thresholds from the code that
-generated its reported odds ratio.
+The pipeline writes the result from the manuscript label table and a separate
+current-classifier sensitivity. The manuscript calculation uses the documented
+3-D 50/150-m return rule and reproduces the reported odds ratio.
 
 The file-level schema and provenance are documented in
 `data/dswp/README.md`. The release boundary is enforced by
@@ -65,10 +63,9 @@ The released input regenerates 1,346 Type A, 1,142 Type B, and 1,198 ambiguous
 events. Ambiguous events remain in the released table and are excluded only
 from analyses explicitly comparing A and B.
 
-The classifier variable is the original constant-speed summary, retained to
-reproduce the reported counts. The selected pitch-adaptive speed is a separate
-column and is used for trajectory-derived analyses. This is a manuscript
-clarification item; see `docs/known_issues.md`.
+The classifier variable is the original constant-speed summary, as stated in
+the Methods and retained to reproduce the reported counts. The selected
+pitch-adaptive speed is a separate column used for trajectory-derived analyses.
 
 ## Event contrasts and sequences
 
@@ -86,11 +83,9 @@ then removes edges touching an ambiguous event before row normalization. It
 runs 200 deterministic leave-subset-out resamples, excluding ten deployments
 per iteration, and reports the mean and standard deviation.
 
-That implementation follows the result-producing notebook exactly and
-recovers the displayed Start and End probabilities. The manuscript currently
-describes exclusion of 5--10 individuals, not ten deployments; this must be
-resolved before release (see `docs/known_issues.md`). For an additional
-robustness analysis, `markov_with_ci` filters to confident labels and
+That implementation follows the result-producing notebook and the Methods and
+recovers the displayed Start and End probabilities. For an additional
+sensitivity analysis, `markov_with_ci` filters to confident labels and
 resamples whole dives to provide percentile intervals. Its output is written
 separately and is not presented as the source of the paper graph.
 

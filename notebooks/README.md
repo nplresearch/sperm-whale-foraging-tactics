@@ -6,8 +6,8 @@ implementation.
 
 Run notebooks from anywhere inside the repository; each notebook locates the
 repository root from `pyproject.toml`. Start with
-`paper/00_manuscript_reproduction_status.ipynb`, which inventories the
-paper-wide outputs and links each unresolved decision to the affected analysis.
+`paper/00_manuscript_reproduction.ipynb`, which inventories the paper-wide
+outputs and points to each analysis notebook.
 
 The DSWP notebooks are:
 
@@ -17,8 +17,8 @@ The DSWP notebooks are:
 3. `dswp/02_energy_model_derivation.ipynb` for the energetic-model derivation;
 4. `dswp/03_manuscript_figure_components.ipynb` for main and supplementary
    tactic, kinematic, sequence, straightness, and pause panels; and
-5. `dswp/04_comeback_reproduction_audit.ipynb` for the two deliberately
-   separate spatial-recurrence label/definition results.
+5. `dswp/04_comeback_analysis.ipynb` for the manuscript spatial-recurrence
+   analysis and current-classifier sensitivity.
 
 The trajectory notebooks are the registered numerical analysis in
 `trajectory/01_reconstructed_trajectory_analysis.ipynb` and the expanded main

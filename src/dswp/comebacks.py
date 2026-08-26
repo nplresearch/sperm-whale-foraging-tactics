@@ -1,12 +1,10 @@
 """Spatial-recurrence analysis from coarse reconstructed trajectories.
 
-The manuscript's current comeback result was produced from 20-s subsamples of
-the constant-speed deployment reconstruction. This module preserves that
-result-producing calculation so it can be audited independently of raw tag
-data. See ``docs/known_issues.md`` before interpreting the output: the current
-SI describes different distance thresholds and the archived forest plot used
-an earlier version of the A/B labels.
+The manuscript's comeback result uses 20-s subsamples of the constant-speed
+deployment reconstruction and the manuscript tactic labels. This module
+reproduces that calculation without requiring raw tag data.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -15,7 +13,6 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
 from statsmodels.stats.contingency_tables import StratifiedTable, Table2x2
-
 
 DEFAULT_CLOSE_M = 50.0
 DEFAULT_FAR_M = 150.0
@@ -150,9 +147,7 @@ def detect_comeback_events(index_csv: str | Path) -> tuple[pd.DataFrame, pd.Data
         )
     nonempty_events = [table for table in event_tables if not table.empty]
     event_table = (
-        pd.concat(nonempty_events, ignore_index=True)
-        if nonempty_events
-        else pd.DataFrame()
+        pd.concat(nonempty_events, ignore_index=True) if nonempty_events else pd.DataFrame()
     )
     if not event_table.empty:
         event_table.insert(
@@ -195,10 +190,7 @@ def attach_comeback_context(
         context.append(
             bool(
                 len(windows)
-                and np.any(
-                    (time >= windows[:, 0] - buffer_s)
-                    & (time <= windows[:, 1] + buffer_s)
-                )
+                and np.any((time >= windows[:, 0] - buffer_s) & (time <= windows[:, 1] + buffer_s))
             )
         )
     return buzzes.assign(deep_comeback_context=context)
@@ -216,12 +208,11 @@ def stratified_comeback_association(
         raise ValueError("events are missing: " + ", ".join(sorted(missing)))
     rows = []
     tables = []
-    for deployment_id, group in events[
-        events[label_col].isin(["A", "B"])
-    ].groupby("deployment_id", sort=True):
-        table = (
-            pd.crosstab(group[context_col].astype(bool), group[label_col])
-            .reindex(index=[True, False], columns=["A", "B"], fill_value=0)
+    for deployment_id, group in events[events[label_col].isin(["A", "B"])].groupby(
+        "deployment_id", sort=True
+    ):
+        table = pd.crosstab(group[context_col].astype(bool), group[label_col]).reindex(
+            index=[True, False], columns=["A", "B"], fill_value=0
         )
         if table.iloc[0].sum() == 0 or table.iloc[1].sum() == 0:
             continue

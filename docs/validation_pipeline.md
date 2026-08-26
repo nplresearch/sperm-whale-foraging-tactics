@@ -10,8 +10,8 @@ The Azores re-analysis uses the authoritative Dryad deposition, **Tonnesen
 [10.5061/dryad.tqjq2bvwg](https://doi.org/10.5061/dryad.tqjq2bvwg).
 The record contains `sw17_196a_buzz.mat`, `sw17_196a_data.mat`,
 `sw17_196a_dive.mat`, and `sw17_196a_echo.mat`, as well as the original MATLAB
-analysis scripts.  These are the source files used for the Azores prey-echo and
-buzz analyses; do not substitute a local copy of the legacy project data.
+analysis scripts. These are the source files used for the Azores prey-echo and
+buzz analyses; use the checksummed archive version named below.
 
 License: **CC0 1.0**, under Dryad's data-publication terms.  Cite the dataset
 in every reuse: *Tonnesen, P. (2020). The long-range echo scene of the sperm
@@ -29,9 +29,8 @@ dependencies: the DOI and checksum manifest are authoritative.
 `validation.azores` validates those sources and implements the operative
 daytime-subset prey-depth, echo-count, nearest-range, pre-buzz speed, pause,
 geometry, robustness, and Markov analyses. It writes only derived event and
-aggregate products. The manuscript/code choices exposed by this reproduction
-are recorded in `docs/known_issues.md`; loading the files alone is not treated
-as successful reproduction.
+aggregate products. Successful reproduction requires checksum validation and
+completion of the registered analysis, not merely loading the source files.
 
 ## CETI 2024: reviewed derived data only
 
@@ -47,8 +46,8 @@ metrics.  The table is sufficient for:
   present; and
 - Start--A/B--End transitions across anonymous dives.
 
-It is not sufficient to recreate raw-sensor time courses.  In particular, the
-legacy roll-speed trace around a buzz requires raw roll at 25 Hz and is not a
+It is not sufficient to recreate raw-sensor time courses. In particular, the
+high-frequency roll-speed trace around a buzz requires raw roll at 25 Hz and is not a
 publication-safe result to regenerate from the minimal table.  The retained
 kinematic summaries reproduce the corresponding per-buzz comparisons.
 
@@ -57,7 +56,7 @@ kinematic summaries reproduce the corresponding per-buzz comparisons.
 Do not add audio/waveforms, pressure, accelerometer/gyroscope/magnetometer
 streams, source MATLAB structs, GPS/locations, original deployment or animal
 identifiers, demographics, raw recording timestamps, private paths, or any
-unreviewed columns. Version 0.1 is intentionally scoped to the buzz-level
+unreviewed columns. Version 1.0 is intentionally scoped to the buzz-level
 validation and does not distribute CETI reconstructed trajectories. Any later
 trajectory release would be a separately reviewed data version.
 
@@ -78,10 +77,8 @@ with release-local sequential pseudonyms, and drops absolute buzz-clock times.
 It does not return or write the private crosswalk. Unsalted hashes are avoided
 because the source identifier namespace is small enough to enumerate. Review
 the resulting CSV, then run `validate_publication_table` before committing it.
-The current release candidate includes this 336-row table for technical
-reproduction, but it remains marked `steward_review_required` in
-`data/manifest.csv` and must not be pushed publicly until that review is
-recorded.
+Version 1.0 includes the reviewed 336-row table under CC BY 4.0. Its checksum
+and approved release status are recorded in `data/manifest.csv`.
 
 ## Re-running CETI validation
 

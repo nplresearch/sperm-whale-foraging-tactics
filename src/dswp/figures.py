@@ -1,37 +1,80 @@
 """Small, data-safe figure helpers for numerical DSWP event-table panels."""
-import numpy as np
+
 import matplotlib.pyplot as plt
+import numpy as np
+
 from .pauses import PAUSE_LABELS, pause_category_table
 
 COLOR_A, COLOR_B = "#2A92D5", "#D56D2A"
+
 
 def plot_pause_distribution(events, *, ax=None):
     """Plot normalized A/B pause densities and the manuscript bin boundaries."""
     ax = ax or plt.subplots(figsize=(5, 3.5))[1]
     for typ, color in (("A", COLOR_A), ("B", COLOR_B)):
         x = events.loc[events.buzz_type.eq(typ), "post_buzz_pause_s"].dropna()
-        if len(x): ax.hist(x, bins=35, density=True, histtype="step", lw=2, color=color, label=f"Type {typ} (n={len(x)})")
-    for value in (1.3, 3.4, 6.0): ax.axvline(value, color="0.4", lw=.8, ls="--")
+        if len(x):
+            ax.hist(
+                x,
+                bins=35,
+                density=True,
+                histtype="step",
+                lw=2,
+                color=color,
+                label=f"Type {typ} (n={len(x)})",
+            )
+    for value in (1.3, 3.4, 6.0):
+        ax.axvline(value, color="0.4", lw=0.8, ls="--")
     ax.set(xlabel="Post-buzz pause (s)", ylabel="Probability density")
-    ax.legend(frameon=False); return ax
+    ax.legend(frameon=False)
+    return ax
+
 
 def plot_pause_categories(events, *, ax=None):
     """Plot A/B category proportions with binomial standard-error bars."""
-    ax = ax or plt.subplots(figsize=(5, 3.5))[1]; table = pause_category_table(events)
-    width = .36; positions = np.arange(len(PAUSE_LABELS))
-    for offset, typ, color in ((-width/2, "A", COLOR_A), (width/2, "B", COLOR_B)):
+    ax = ax or plt.subplots(figsize=(5, 3.5))[1]
+    table = pause_category_table(events)
+    width = 0.36
+    positions = np.arange(len(PAUSE_LABELS))
+    for offset, typ, color in ((-width / 2, "A", COLOR_A), (width / 2, "B", COLOR_B)):
         data = table[table.buzz_type.eq(typ)].set_index("pause_category").reindex(PAUSE_LABELS)
-        ax.bar(positions + offset, data.proportion, width, yerr=data.binomial_se, color=color, capsize=2, label=f"Type {typ}")
-    ax.set(xticks=positions, xticklabels=[x.replace("_", " ") for x in PAUSE_LABELS], ylabel="Proportion")
-    ax.legend(frameon=False); return ax
+        ax.bar(
+            positions + offset,
+            data.proportion,
+            width,
+            yerr=data.binomial_se,
+            color=color,
+            capsize=2,
+            label=f"Type {typ}",
+        )
+    ax.set(
+        xticks=positions,
+        xticklabels=[x.replace("_", " ") for x in PAUSE_LABELS],
+        ylabel="Proportion",
+    )
+    ax.legend(frameon=False)
+    return ax
+
 
 def plot_individual_energy(paired, *, ax=None):
     """Paired A/B energy panel from approved opaque individual-level means."""
     ax = ax or plt.subplots(figsize=(4.5, 4))[1]
-    for _, row in paired.dropna(subset=["A", "B"]).iterrows(): ax.plot([0, 1], [row.A / 1e6, row.B / 1e6], color=".7", lw=.8, zorder=1)
+    for _, row in paired.dropna(subset=["A", "B"]).iterrows():
+        ax.plot([0, 1], [row.A / 1e6, row.B / 1e6], color=".7", lw=0.8, zorder=1)
     for x, col, label in ((0, "A", "Type A"), (1, "B", "Type B")):
-        data = paired[col].dropna() / 1e6; ax.scatter(np.repeat(x, len(data)), data, color=COLOR_A if col == "A" else COLOR_B, label=label, zorder=2)
-    ax.set(xticks=[0, 1], xticklabels=["Type A", "Type B"], ylabel="Mean estimated energy per buzz (MJ)")
+        data = paired[col].dropna() / 1e6
+        ax.scatter(
+            np.repeat(x, len(data)),
+            data,
+            color=COLOR_A if col == "A" else COLOR_B,
+            label=label,
+            zorder=2,
+        )
+    ax.set(
+        xticks=[0, 1],
+        xticklabels=["Type A", "Type B"],
+        ylabel="Mean estimated energy per buzz (MJ)",
+    )
     return ax
 
 
@@ -115,9 +158,7 @@ def plot_reconstruction_error_summary(errors, *, axes=None):
         (axes[1], "median_error_m", "Median error per deployment"),
     ):
         values = [
-            errors.loc[
-                errors["reconstruction_method"].eq(method), column
-            ].to_numpy()
+            errors.loc[errors["reconstruction_method"].eq(method), column].to_numpy()
             for method in order
         ]
         violin = ax.violinplot(values, showextrema=False)
@@ -148,8 +189,9 @@ def plot_reconstruction_error_summary(errors, *, axes=None):
         ax.tick_params(axis="x", labelrotation=20)
 
     winners = (
-        errors.loc[errors.groupby("deployment_id")["mean_error_m"].idxmin()]
-        ["reconstruction_method"]
+        errors.loc[errors.groupby("deployment_id")["mean_error_m"].idxmin()][
+            "reconstruction_method"
+        ]
         .value_counts()
         .reindex(order, fill_value=0)
     )
@@ -202,15 +244,9 @@ def plot_markov(transitions, *, ax=None):
     ax = ax or plt.subplots(figsize=(4.5, 3.5))[1]
     sources = ["S", "A", "B"]
     targets = ["A", "B", "E"]
-    value_column = (
-        "mean_probability"
-        if "mean_probability" in transitions
-        else "probability"
-    )
+    value_column = "mean_probability" if "mean_probability" in transitions else "probability"
     matrix = (
-        transitions.pivot(
-            index="from_state", columns="to_state", values=value_column
-        )
+        transitions.pivot(index="from_state", columns="to_state", values=value_column)
         .reindex(index=sources, columns=targets)
         .fillna(0)
     )
@@ -233,9 +269,7 @@ def plot_markov(transitions, *, ax=None):
 def plot_comeback_forest(strata, summary, *, ax=None):
     """Deployment-level and pooled recurrence/tactic odds ratios."""
     ax = ax or plt.subplots(figsize=(6, 6))[1]
-    values = strata.sort_values("deployment_id", ascending=False).reset_index(
-        drop=True
-    )
+    values = strata.sort_values("deployment_id", ascending=False).reset_index(drop=True)
     y = np.arange(1, len(values) + 1)
     odds = values["odds_ratio_corrected"].to_numpy()
     low = values["ci_low_corrected"].to_numpy()

@@ -3,34 +3,43 @@
 The functions here deliberately compose the existing analysis modules.  They
 return Matplotlib figures and metadata; they never write files or embed data.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import seaborn as sns
 from matplotlib.patches import Arc, Circle, FancyArrowPatch, Patch
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
-import seaborn as sns
 
-from .classification import attach_labels, gmm_model_selection, classifier_robustness
+from trajectory.analysis import load_trajectory
+
+from .classification import attach_labels, classifier_robustness, gmm_model_selection
+from .comebacks import (
+    attach_comeback_context,
+    detect_comeback_events,
+    stratified_comeback_association,
+)
 from .figures import (
-    plot_classifier, plot_comeback_forest, plot_individual_energy,
-    plot_markov, plot_pause_categories, plot_pause_distribution,
+    plot_classifier,
+    plot_comeback_forest,
+    plot_individual_energy,
+    plot_markov,
+    plot_pause_categories,
+    plot_pause_distribution,
     plot_roll_timecourse,
 )
+from .io import load_buzz_events
+from .pauses import PAUSE_LABELS, pause_category_table
 from .statistics import (
     compare_groups,
     geometry_association,
     markov_leave_subset_out,
     roll_speed_bin_tests,
 )
-from .comebacks import detect_comeback_events, attach_comeback_context, stratified_comeback_association
-from .io import load_buzz_events
-from .pauses import PAUSE_LABELS, pause_category_table
-from trajectory.analysis import load_trajectory
-
 
 COLOR_A = "#2A92D5"
 COLOR_B = "#D56D2A"
@@ -109,7 +118,15 @@ def _individual_counts_panel(events, ax):
     ax.bar(x, counts["A"], width=0.8, color=COLOR_A, alpha=0.82)
     ax.bar(x, counts["B"], width=0.8, bottom=counts["A"], color=COLOR_B, alpha=0.82)
     for position, (individual, row) in enumerate(counts.iterrows()):
-        ax.text(position, row["total"] + 4, individual, rotation=90, ha="center", va="bottom", fontsize=6.5)
+        ax.text(
+            position,
+            row["total"] + 4,
+            individual,
+            rotation=90,
+            ha="center",
+            va="bottom",
+            fontsize=6.5,
+        )
     ax.set(
         xlim=(-0.6, len(counts) - 0.4),
         ylim=(0, max(400, counts["total"].max() + 45)),
@@ -125,7 +142,9 @@ def _individual_counts_panel(events, ax):
 def _vertical_speed_panel(events, ax):
     bins = np.linspace(-3, 3, 43)
     for label, color in (("A", COLOR_A), ("B", COLOR_B)):
-        values = events.loc[events["buzz_type"].eq(label), "pre_buzz_vertical_velocity_m_s"].dropna()
+        values = events.loc[
+            events["buzz_type"].eq(label), "pre_buzz_vertical_velocity_m_s"
+        ].dropna()
         ax.hist(values, bins=bins, density=True, histtype="stepfilled", color=color, alpha=0.35)
         ax.hist(values, bins=bins, density=True, histtype="step", color=color, linewidth=1.0)
         sns.kdeplot(x=values, color=color, linewidth=1.4, clip=(-3, 3), ax=ax)
@@ -134,7 +153,10 @@ def _vertical_speed_panel(events, ax):
     ax.text(1.55, 0.48, "Positive speed:\ngoing down", ha="center", color="0.35", fontsize=7)
     ax.set(xlim=(-3, 3), ylim=(0, 0.85), xlabel="Vertical speed (m/s)", ylabel="Density")
     ax.legend(
-        handles=[Patch(color=COLOR_A, alpha=0.5, label="Type A"), Patch(color=COLOR_B, alpha=0.5, label="Type B")],
+        handles=[
+            Patch(color=COLOR_A, alpha=0.5, label="Type A"),
+            Patch(color=COLOR_B, alpha=0.5, label="Type B"),
+        ],
         frameon=False,
         fontsize=8,
     )
@@ -142,9 +164,15 @@ def _vertical_speed_panel(events, ax):
 
 
 def _roll_panel(events, roll_bins, ax):
-    values = roll_bins.merge(events[["event_id", "buzz_type"]], on="event_id", validate="many_to_one")
+    values = roll_bins.merge(
+        events[["event_id", "buzz_type"]], on="event_id", validate="many_to_one"
+    )
     values = values.loc[values["buzz_type"].isin(["A", "B"])]
-    summary = values.groupby(["buzz_type", "time_bin_s"])["roll_speed_deg_s"].agg(["mean", "sem"]).reset_index()
+    summary = (
+        values.groupby(["buzz_type", "time_bin_s"])["roll_speed_deg_s"]
+        .agg(["mean", "sem"])
+        .reset_index()
+    )
     for label, color in (("A", COLOR_A), ("B", COLOR_B)):
         group = summary.loc[summary["buzz_type"].eq(label)].sort_values("time_bin_s")
         x = group["time_bin_s"].to_numpy(float)
@@ -156,7 +184,13 @@ def _roll_panel(events, roll_bins, ax):
     tests = roll_speed_bin_tests(events, roll_bins)
     y_top = max(11.0, float((summary["mean"] + summary["sem"]).max()) * 1.15)
     for row in tests.loc[tests["significant_0_05"]].itertuples(index=False):
-        stars = "***" if row.p_value_bonferroni < 0.001 else "**" if row.p_value_bonferroni < 0.01 else "*"
+        stars = (
+            "***"
+            if row.p_value_bonferroni < 0.001
+            else "**"
+            if row.p_value_bonferroni < 0.01
+            else "*"
+        )
         local = summary.loc[summary["time_bin_s"].eq(row.time_bin_s)]
         y = float((local["mean"] + local["sem"]).max()) + 0.18
         ax.text(row.time_bin_s, y, stars, ha="center", va="bottom", fontsize=7, fontweight="bold")
@@ -175,7 +209,9 @@ def _roll_panel(events, roll_bins, ax):
 
 def _geometry_panel(events, ax):
     geometry, test = geometry_association(events)
-    table = geometry.pivot(index="buzz_type", columns="geometry", values="count").reindex(index=["A", "B"])
+    table = geometry.pivot(index="buzz_type", columns="geometry", values="count").reindex(
+        index=["A", "B"]
+    )
     order = ["down_to_down", "up_to_up", "down_to_up", "up_to_down"]
     table = table.reindex(columns=order, fill_value=0)
     proportions = table.div(table.sum(axis=1), axis=0)
@@ -185,12 +221,34 @@ def _geometry_panel(events, ax):
     x = np.arange(2)
     for column, color, label in zip(order, colors, labels):
         values = proportions[column].to_numpy(float)
-        ax.bar(x, values, bottom=bottom, width=0.42, color=color, edgecolor="white", linewidth=1, label=label)
+        ax.bar(
+            x,
+            values,
+            bottom=bottom,
+            width=0.42,
+            color=color,
+            edgecolor="white",
+            linewidth=1,
+            label=label,
+        )
         for position, value, base in zip(x, values, bottom):
             if value >= 0.07:
-                ax.text(position, base + value / 2, f"{100 * value:.0f}%", ha="center", va="center", fontsize=8)
+                ax.text(
+                    position,
+                    base + value / 2,
+                    f"{100 * value:.0f}%",
+                    ha="center",
+                    va="center",
+                    fontsize=8,
+                )
         bottom += values
-    ax.set(xticks=x, xticklabels=["A", "B"], ylim=(0, 1), xlabel="Buzz type", ylabel="Proportion of buzzes")
+    ax.set(
+        xticks=x,
+        xticklabels=["A", "B"],
+        ylim=(0, 1),
+        xlabel="Buzz type",
+        ylabel="Proportion of buzzes",
+    )
     ax.legend(frameon=False, fontsize=6.5, loc="center", bbox_to_anchor=(0.5, 0.5))
     _paper_axis(ax)
     return proportions, test
@@ -202,7 +260,10 @@ def _energy_panel(events, energy_events, order, ax):
     positions = np.arange(len(order))
     for label, color, offset in (("A", COLOR_A, -0.18), ("B", COLOR_B, 0.18)):
         samples = [
-            values.loc[(values["individual_id"].eq(individual)) & (values["buzz_type"].eq(label)), "E_total_J"].dropna()
+            values.loc[
+                (values["individual_id"].eq(individual)) & (values["buzz_type"].eq(label)),
+                "E_total_J",
+            ].dropna()
             for individual in order
         ]
         box = ax.boxplot(
@@ -221,7 +282,12 @@ def _energy_panel(events, energy_events, order, ax):
             patch.set_facecolor(color)
             patch.set_alpha(0.62)
             patch.set_edgecolor(color)
-    ax.set(xlim=(-0.7, len(order) - 0.3), xticks=[], xlabel="Whale ID", ylabel="Total energy per buzz (J)")
+    ax.set(
+        xlim=(-0.7, len(order) - 0.3),
+        xticks=[],
+        xlabel="Whale ID",
+        ylabel="Total energy per buzz (J)",
+    )
     ax.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
     for position, individual in enumerate(order):
         ax.text(
@@ -235,7 +301,10 @@ def _energy_panel(events, energy_events, order, ax):
             fontsize=6,
         )
     ax.legend(
-        handles=[Patch(facecolor=COLOR_A, alpha=0.62, label="Type A"), Patch(facecolor=COLOR_B, alpha=0.62, label="Type B")],
+        handles=[
+            Patch(facecolor=COLOR_A, alpha=0.62, label="Type A"),
+            Patch(facecolor=COLOR_B, alpha=0.62, label="Type B"),
+        ],
         frameon=False,
         fontsize=8,
         loc="upper left",
@@ -255,7 +324,9 @@ def _representative_trajectory_panel(events, trajectory_index_path, ax, *, traje
     offset = len(xyz) - 1 - len(speed)
     aligned_xyz = xyz[offset : offset + len(speed)]
     time_s = np.arange(len(speed)) / fs_hz
-    selected = events.loc[events["trajectory_id"].eq(trajectory_id)].sort_values("buzz_order_in_dive")
+    selected = events.loc[events["trajectory_id"].eq(trajectory_id)].sort_values(
+        "buzz_order_in_dive"
+    )
     centre = float(selected.loc[selected["buzz_order_in_dive"].eq(15), "buzz_start_s"].iloc[0])
     half_window_s = 50.0
     mask = (time_s >= centre - half_window_s) & (time_s <= centre + half_window_s)
@@ -280,12 +351,28 @@ def _representative_trajectory_panel(events, trajectory_index_path, ax, *, traje
     ax.set_yticklabels([])
     ax.set_zlabel("Depth (m)", labelpad=2, fontsize=8)
     ax.tick_params(labelsize=7, pad=-2)
-    shown = selected.loc[selected["buzz_start_s"].between(centre - half_window_s, centre + half_window_s)]
+    shown = selected.loc[
+        selected["buzz_start_s"].between(centre - half_window_s, centre + half_window_s)
+    ]
     for event in shown.itertuples(index=False):
         nearest = int(np.argmin(np.abs(time_s - float(event.buzz_start_s))))
         position = aligned_xyz[nearest]
-        color = COLOR_A if event.buzz_type == "A" else COLOR_B if event.buzz_type == "B" else COLOR_UNKNOWN
-        ax.scatter(*position, color=color, edgecolor="black", linewidth=0.6, s=48, depthshade=False, zorder=20)
+        color = (
+            COLOR_A
+            if event.buzz_type == "A"
+            else COLOR_B
+            if event.buzz_type == "B"
+            else COLOR_UNKNOWN
+        )
+        ax.scatter(
+            *position,
+            color=color,
+            edgecolor="black",
+            linewidth=0.6,
+            s=48,
+            depthshade=False,
+            zorder=20,
+        )
         if event.buzz_type in ("A", "B"):
             ax.text(*position, f"  Buzz {event.buzz_type}", fontsize=7, zorder=30)
     color_axis = ax.inset_axes([0.28, 0.93, 0.48, 0.025])
@@ -304,7 +391,11 @@ def _representative_trajectory_panel(events, trajectory_index_path, ax, *, traje
         ha="center",
         fontsize=6.5,
     )
-    return {"trajectory_id": trajectory_id, "centre_buzz_order": 15, "duration_s": 2 * half_window_s}
+    return {
+        "trajectory_id": trajectory_id,
+        "centre_buzz_order": 15,
+        "duration_s": 2 * half_window_s,
+    }
 
 
 def dswp_tactics_manuscript_figure(events, *, roll_bins, energy_events, trajectory_index_path):
@@ -356,7 +447,10 @@ def _transition_lookup(transitions):
     value = "mean_probability" if "mean_probability" in transitions else "probability"
     std = "std_probability" if "std_probability" in transitions else None
     return {
-        (row.from_state, row.to_state): (float(getattr(row, value)), float(getattr(row, std)) if std else np.nan)
+        (row.from_state, row.to_state): (
+            float(getattr(row, value)),
+            float(getattr(row, std)) if std else np.nan,
+        )
         for row in transitions.itertuples(index=False)
     }
 
@@ -389,12 +483,31 @@ def _markov_graph_panel(transitions, ax):
     edge(node["B"], node["A"], rad=-0.22, width=1.7)
     edge(node["A"], node["B"], rad=-0.29, width=1.7)
     for key, center, theta1, theta2 in (("B", node["B"], 5, 300), ("A", node["A"], 185, 500)):
-        ax.add_patch(Arc(center, 0.22, 0.21, theta1=theta1, theta2=theta2, linewidth=1.7, color="black"))
-    ax.add_patch(FancyArrowPatch((0.235, 0.79), (0.248, 0.765), arrowstyle="-|>", mutation_scale=12, color="black"))
-    ax.add_patch(FancyArrowPatch((0.79, 0.25), (0.77, 0.245), arrowstyle="-|>", mutation_scale=12, color="black"))
+        ax.add_patch(
+            Arc(center, 0.22, 0.21, theta1=theta1, theta2=theta2, linewidth=1.7, color="black")
+        )
+    ax.add_patch(
+        FancyArrowPatch(
+            (0.235, 0.79), (0.248, 0.765), arrowstyle="-|>", mutation_scale=12, color="black"
+        )
+    )
+    ax.add_patch(
+        FancyArrowPatch(
+            (0.79, 0.25), (0.77, 0.245), arrowstyle="-|>", mutation_scale=12, color="black"
+        )
+    )
     for label, color in (("A", COLOR_A), ("B", COLOR_B)):
         ax.add_patch(Circle(node[label], 0.095, facecolor=color, edgecolor="none", zorder=5))
-        ax.text(*node[label], label, ha="center", va="center", color="white", fontsize=22, fontweight="bold", zorder=6)
+        ax.text(
+            *node[label],
+            label,
+            ha="center",
+            va="center",
+            color="white",
+            fontsize=22,
+            fontweight="bold",
+            zorder=6,
+        )
     ax.text(0.03, 0.05, "Start", fontsize=14, fontstyle="italic")
     ax.text(0.91, 0.91, "End", fontsize=14, fontstyle="italic")
 
@@ -420,10 +533,18 @@ def _straightness_panel(events, metric, title, ax):
     comparison = compare_groups(events, metric)
     for label, color in (("A", COLOR_A), ("B", COLOR_B)):
         values = events.loc[events["buzz_type"].eq(label), metric].dropna()
-        sns.kdeplot(x=values, color=color, linewidth=1.8, fill=True, alpha=0.28, clip=(0.85, 1), ax=ax)
+        sns.kdeplot(
+            x=values, color=color, linewidth=1.8, fill=True, alpha=0.28, clip=(0.85, 1), ax=ax
+        )
     p_value = comparison["p_value"]
     p_text = "p < 0.01" if p_value < 0.01 else f"p = {p_value:.2f}"
-    ax.text(0.38, 0.58, p_text + f"\n$\\delta$={comparison['cliffs_delta']:.2f}", transform=ax.transAxes, fontsize=10)
+    ax.text(
+        0.38,
+        0.58,
+        p_text + f"\n$\\delta$={comparison['cliffs_delta']:.2f}",
+        transform=ax.transAxes,
+        fontsize=10,
+    )
     ax.set(xlim=(0.85, 1.0), xlabel="Straightness index", title=title)
     _paper_axis(ax)
     return comparison
@@ -438,8 +559,23 @@ def _pause_distribution_panel(events, ax):
     for boundary in (1.3, 3.4, 6.0):
         ax.axvline(boundary, color="0.75", linestyle="--", linewidth=0.7)
     for label, x in (("Short", 0.65), ("Medium", 2.35), ("Long", 4.7), ("Very long", 7.2)):
-        ax.text(x, 0.96, label, transform=ax.get_xaxis_transform(), ha="center", va="top", color="0.45", fontsize=8)
-    ax.set(xlim=(0, 15), ylim=(0, 0.4), xticks=[0, 3, 6, 9, 12, 15], xlabel="Pause duration (s)", ylabel="Density")
+        ax.text(
+            x,
+            0.96,
+            label,
+            transform=ax.get_xaxis_transform(),
+            ha="center",
+            va="top",
+            color="0.45",
+            fontsize=8,
+        )
+    ax.set(
+        xlim=(0, 15),
+        ylim=(0, 0.4),
+        xticks=[0, 3, 6, 9, 12, 15],
+        xlabel="Pause duration (s)",
+        ylabel="Density",
+    )
     _paper_axis(ax)
     inset = ax.inset_axes([0.58, 0.56, 0.36, 0.31])
     inset.set_xlim(0, 1)
@@ -449,17 +585,31 @@ def _pause_distribution_panel(events, ax):
     for x, height in zip(np.linspace(0.10, 0.35, 8), [0.35, 0.55, 0.75, 0.9, 0.7, 0.55, 0.4, 0.25]):
         inset.plot([x, x], [0.5 - height / 4, 0.5 + height / 4], color=COLOR_A, linewidth=1.5)
     inset.plot([0.70, 0.70], [0.28, 0.72], color="#352F7E", linewidth=2)
-    inset.annotate("", xy=(0.69, 0.22), xytext=(0.39, 0.22), arrowprops={"arrowstyle": "|-|", "color": "0.25"})
+    inset.annotate(
+        "", xy=(0.69, 0.22), xytext=(0.39, 0.22), arrowprops={"arrowstyle": "|-|", "color": "0.25"}
+    )
     inset.text(0.54, 0.08, "Pause", ha="center", fontsize=8)
     inset.text(0.22, 0.82, "Buzz", color=COLOR_A, ha="center", fontsize=7)
-    inset.text(0.70, 0.82, "First click\nafter buzz", color="#352F7E", ha="center", fontsize=6.5, linespacing=0.8)
+    inset.text(
+        0.70,
+        0.82,
+        "First click\nafter buzz",
+        color="#352F7E",
+        ha="center",
+        fontsize=6.5,
+        linespacing=0.8,
+    )
 
 
 def _pause_categories_panel(events, ax):
     table = pause_category_table(events)
     x = np.arange(len(PAUSE_LABELS))
     for label, color, offset in (("A", COLOR_A, -0.08), ("B", COLOR_B, 0.08)):
-        group = table.loc[table["buzz_type"].eq(label)].set_index("pause_category").reindex(PAUSE_LABELS)
+        group = (
+            table.loc[table["buzz_type"].eq(label)]
+            .set_index("pause_category")
+            .reindex(PAUSE_LABELS)
+        )
         ax.errorbar(
             x + offset,
             group["proportion"],
@@ -497,8 +647,12 @@ def dswp_sequence_manuscript_figure(events, *, straightness, transitions):
         "pause_categories": fig.add_subplot(grid[1, 6:]),
     }
     _markov_graph_panel(transitions, axes["markov"])
-    before = _straightness_panel(events, "straightness_before_20m", r"20 m $\it{before}$ buzz", axes["straight_before"])
-    after = _straightness_panel(events, "straightness_after_20m", r"20 m $\it{after}$ buzz", axes["straight_after"])
+    before = _straightness_panel(
+        events, "straightness_before_20m", r"20 m $\it{before}$ buzz", axes["straight_before"]
+    )
+    after = _straightness_panel(
+        events, "straightness_after_20m", r"20 m $\it{after}$ buzz", axes["straight_after"]
+    )
     axes["straight_before"].set_ylabel("Density")
     axes["straight_after"].set_ylabel("")
     _pause_distribution_panel(events, axes["pause_distribution"])
@@ -507,7 +661,11 @@ def dswp_sequence_manuscript_figure(events, *, straightness, transitions):
     _panel_label(axes["straight_before"], "b", x=-0.18)
     _panel_label(axes["pause_distribution"], "c", x=-0.08)
     _panel_label(axes["pause_categories"], "d", x=-0.16)
-    return fig, {"straightness_before": before, "straightness_after": after, "pause_categories": categories}
+    return fig, {
+        "straightness_before": before,
+        "straightness_after": after,
+        "pause_categories": categories,
+    }
 
 
 def _unavailable(ax, message: str):
@@ -539,7 +697,9 @@ def dswp_component_figure(events, *, roll_bins=None, energy=None, transitions=No
         proportions = geometry.assign(
             proportion=lambda x: x["count"] / x.groupby("buzz_type")["count"].transform("sum")
         )
-        proportions.pivot(index="buzz_type", columns="geometry", values="proportion").plot.bar(ax=axes[1, 2])
+        proportions.pivot(index="buzz_type", columns="geometry", values="proportion").plot.bar(
+            ax=axes[1, 2]
+        )
         axes[1, 2].set_ylabel("Proportion")
     else:
         _unavailable(axes[1, 2], "geometry summaries")
@@ -552,9 +712,18 @@ def dswp_component_figure(events, *, roll_bins=None, energy=None, transitions=No
     else:
         _unavailable(axes[1, 3], "kinematic summaries")
     if "individual_id" in events:
-        proportions = events[events.buzz_type.isin(["A", "B"])].groupby(["individual_id", "buzz_type"]).size().unstack(fill_value=0)
-        proportions.div(proportions.sum(axis=1), axis=0).plot.bar(stacked=True, ax=axes[2, 0], color=["#2A92D5", "#D56D2A"])
-        axes[2, 0].set(title="Individual tactic proportions", ylabel="Proportion", xlabel="Individual")
+        proportions = (
+            events[events.buzz_type.isin(["A", "B"])]
+            .groupby(["individual_id", "buzz_type"])
+            .size()
+            .unstack(fill_value=0)
+        )
+        proportions.div(proportions.sum(axis=1), axis=0).plot.bar(
+            stacked=True, ax=axes[2, 0], color=["#2A92D5", "#D56D2A"]
+        )
+        axes[2, 0].set(
+            title="Individual tactic proportions", ylabel="Proportion", xlabel="Individual"
+        )
     else:
         _unavailable(axes[2, 0], "individual identifiers")
     if "avg_depth_m" in events:
@@ -566,7 +735,13 @@ def dswp_component_figure(events, *, roll_bins=None, energy=None, transitions=No
     if not geometry.empty:
         residual = geometry.pivot(index="buzz_type", columns="geometry", values="pearson_residual")
         axes[2, 2].imshow(residual, cmap="coolwarm", vmin=-2, vmax=2)
-        axes[2, 2].set(title=f"Geometry residuals (p={geometry_test['p_value']:.3g})", xticks=range(len(residual.columns)), xticklabels=residual.columns, yticks=range(len(residual.index)), yticklabels=residual.index)
+        axes[2, 2].set(
+            title=f"Geometry residuals (p={geometry_test['p_value']:.3g})",
+            xticks=range(len(residual.columns)),
+            xticklabels=residual.columns,
+            yticks=range(len(residual.index)),
+            yticklabels=residual.index,
+        )
         axes[2, 2].tick_params(axis="x", rotation=35)
     else:
         _unavailable(axes[2, 2], "geometry residuals")
@@ -590,8 +765,10 @@ def dswp_component_figure(events, *, roll_bins=None, energy=None, transitions=No
         available_panels.append("energy")
     if "straightness_before_20m" in events:
         available_panels.append("straightness")
-    return fig, {"available": available_panels,
-                 "unavailable": ["full_record", "regional_map", "exact_assembly"]}
+    return fig, {
+        "available": available_panels,
+        "unavailable": ["full_record", "regional_map", "exact_assembly"],
+    }
 
 
 def dswp_model_selection_figure(events):
@@ -629,31 +806,34 @@ def dswp_model_selection_figure(events):
     return fig, {"selection": selection, "agreement": agreement}
 
 
-def comeback_alternatives(events_path, index_path, legacy_labels_path=None):
-    """Compute legacy/current comeback alternatives without selecting one."""
+def comeback_classifier_comparison(events_path, index_path, manuscript_labels_path=None):
+    """Plot the manuscript recurrence result and current-classifier sensitivity."""
     events = attach_labels(load_buzz_events(events_path, require_classifier=True), method="gmm")
     detected, deployments = detect_comeback_events(index_path)
     current = attach_comeback_context(events, detected)
     current_strata, current_summary = stratified_comeback_association(current)
     result = {"current": (current_strata, current_summary), "deployments": deployments}
-    if legacy_labels_path is not None:
-        legacy = pd.read_csv(legacy_labels_path)
-        key = "event_id" if "event_id" in legacy and "event_id" in events else None
-        legacy_column = "legacy_buzz_type" if "legacy_buzz_type" in legacy else "buzz_type"
-        if key is not None and legacy_column in legacy:
-            legacy_events = events.drop(columns=["buzz_type"], errors="ignore").merge(
-                legacy[[key, legacy_column]].rename(columns={legacy_column: "buzz_type"}),
-                on=key, how="left"
+    if manuscript_labels_path is not None:
+        manuscript_labels = pd.read_csv(manuscript_labels_path)
+        key = "event_id" if "event_id" in manuscript_labels and "event_id" in events else None
+        label_column = (
+            "manuscript_buzz_type" if "manuscript_buzz_type" in manuscript_labels else "buzz_type"
+        )
+        if key is not None and label_column in manuscript_labels:
+            manuscript_events = events.drop(columns=["buzz_type"], errors="ignore").merge(
+                manuscript_labels[[key, label_column]].rename(columns={label_column: "buzz_type"}),
+                on=key,
+                how="left",
             )
-            legacy_events = attach_comeback_context(legacy_events, detected)
-            result["legacy"] = stratified_comeback_association(legacy_events)
+            manuscript_events = attach_comeback_context(manuscript_events, detected)
+            result["manuscript"] = stratified_comeback_association(manuscript_events)
     fig, axes = plt.subplots(1, 2, figsize=(12, 6), constrained_layout=True)
     plot_comeback_forest(current_strata, current_summary, ax=axes[0])
-    axes[0].set_title("Registered current labels")
-    if "legacy" in result:
-        legacy_strata, legacy_summary = result["legacy"]
-        plot_comeback_forest(legacy_strata, legacy_summary, ax=axes[1])
-        axes[1].set_title("Archived manuscript labels")
+    axes[0].set_title("Current-classifier sensitivity")
+    if "manuscript" in result:
+        manuscript_strata, manuscript_summary = result["manuscript"]
+        plot_comeback_forest(manuscript_strata, manuscript_summary, ax=axes[1])
+        axes[1].set_title("Manuscript labels")
     else:
-        _unavailable(axes[1], "archived label table not supplied")
+        _unavailable(axes[1], "manuscript label table not supplied")
     return fig, result

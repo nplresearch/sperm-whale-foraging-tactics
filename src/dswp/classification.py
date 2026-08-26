@@ -1,4 +1,5 @@
 """Paper-compatible A/B buzz classification from derived feature summaries."""
+
 import numpy as np
 import pandas as pd
 from scipy.stats import rankdata
@@ -23,11 +24,14 @@ MODEL_SELECTION_FEATURES = {
     ),
 }
 
+
 def _valid(frame, features=FEATURES):
     return frame.loc[frame.loc[:, list(features)].notna().all(axis=1), list(features)]
 
-def classify_gmm(frame: pd.DataFrame, *, features=FEATURES, probability_threshold=0.75,
-                 random_state=1234) -> pd.Series:
+
+def classify_gmm(
+    frame: pd.DataFrame, *, features=FEATURES, probability_threshold=0.75, random_state=1234
+) -> pd.Series:
     """Two-component quantile-normal GMM used for the main DSWP classifier.
 
     The high-speed component is B, low-speed component A.  Rows lacking either
@@ -36,17 +40,25 @@ def classify_gmm(frame: pd.DataFrame, *, features=FEATURES, probability_threshol
     """
     from sklearn.mixture import GaussianMixture
     from sklearn.preprocessing import QuantileTransformer
+
     valid = _valid(frame, features)
     labels = pd.Series("?", index=frame.index, dtype=object)
     if len(valid) < 4:
         return labels
     # The paper code used every complete observation as a quantile. Keep this
     # explicit because sklearn's estimator default would otherwise cap at 1000.
-    transformed = QuantileTransformer(n_quantiles=len(valid), output_distribution="normal",
-                                      random_state=0).fit_transform(valid.to_numpy())
-    model = GaussianMixture(n_components=2, covariance_type="full", n_init=10,
-                            init_params="kmeans", random_state=random_state).fit(transformed)
-    posterior = model.predict_proba(transformed); hard = posterior.argmax(axis=1)
+    transformed = QuantileTransformer(
+        n_quantiles=len(valid), output_distribution="normal", random_state=0
+    ).fit_transform(valid.to_numpy())
+    model = GaussianMixture(
+        n_components=2,
+        covariance_type="full",
+        n_init=10,
+        init_params="kmeans",
+        random_state=random_state,
+    ).fit(transformed)
+    posterior = model.predict_proba(transformed)
+    hard = posterior.argmax(axis=1)
     high_speed_component = np.argmax([valid.iloc[hard == k, 1].mean() for k in range(2)])
     named = np.where(hard == high_speed_component, "B", "A")
     labels.loc[valid.index] = np.where(posterior.max(axis=1) < probability_threshold, "?", named)
@@ -106,23 +118,28 @@ def classifier_speed_sensitivity(frame: pd.DataFrame) -> dict:
     }
 
 
-def classify_extreme_corners(frame: pd.DataFrame, *, features=FEATURES, n_per_class=None) -> pd.Series:
+def classify_extreme_corners(
+    frame: pd.DataFrame, *, features=FEATURES, n_per_class=None
+) -> pd.Series:
     """Azores robustness classification in rank space.
 
     A is nearest the short-ramp/slow-speed corner and B nearest the
     long-ramp/fast-speed corner.  Overlap is deliberately labelled ``?`` rather
     than arbitrarily assigned, making the two reference sets disjoint.
     """
-    valid = _valid(frame, features); labels = pd.Series("?", index=frame.index, dtype=object)
+    valid = _valid(frame, features)
+    labels = pd.Series("?", index=frame.index, dtype=object)
     if len(valid) < 2:
         return labels
-    n = len(valid); n_per_class = n // 2 if n_per_class is None else int(n_per_class)
+    n = len(valid)
+    n_per_class = n // 2 if n_per_class is None else int(n_per_class)
     if not 1 <= n_per_class <= n:
         raise ValueError("n_per_class must lie between 1 and number of complete rows")
     ranks = np.column_stack([(rankdata(valid[c]) - 1) / (n - 1) for c in features])
     a = set(valid.index[np.argsort(np.hypot(ranks[:, 0], ranks[:, 1]))[:n_per_class]])
-    b = set(valid.index[np.argsort(np.hypot(1-ranks[:, 0], 1-ranks[:, 1]))[:n_per_class]])
-    labels.loc[list(a - b)] = "A"; labels.loc[list(b - a)] = "B"
+    b = set(valid.index[np.argsort(np.hypot(1 - ranks[:, 0], 1 - ranks[:, 1]))[:n_per_class]])
+    labels.loc[list(a - b)] = "A"
+    labels.loc[list(b - a)] = "B"
     return labels
 
 
@@ -137,9 +154,7 @@ def classify_corner_argmin(
     if len(valid) < 2:
         return labels
     n = len(valid)
-    ranks = np.column_stack(
-        [(rankdata(valid[column]) - 1) / (n - 1) for column in features]
-    )
+    ranks = np.column_stack([(rankdata(valid[column]) - 1) / (n - 1) for column in features])
     distance_a = np.hypot(ranks[:, 0], ranks[:, 1])
     distance_b = np.hypot(1 - ranks[:, 0], 1 - ranks[:, 1])
     labels.loc[valid.index] = np.where(distance_a <= distance_b, "A", "B")
@@ -171,11 +186,7 @@ def classifier_robustness(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFra
         direct = np.mean(reference == candidate)
         flipped = np.mean(reference != candidate)
         was_flipped = bool(flipped > direct)
-        aligned = (
-            np.where(candidate == "A", "B", "A")
-            if was_flipped
-            else candidate
-        )
+        aligned = np.where(candidate == "A", "B", "A") if was_flipped else candidate
         matrix = confusion_matrix(reference, aligned, labels=["A", "B"])
         summaries.append(
             {
@@ -218,9 +229,7 @@ def gmm_model_selection(
     for pair_name, features in feature_pairs.items():
         valid = _valid(working, features)
         if len(valid) < 10:
-            raise ValueError(
-                f"Too few complete rows for model selection: {pair_name}"
-            )
+            raise ValueError(f"Too few complete rows for model selection: {pair_name}")
         transformed = QuantileTransformer(
             n_quantiles=len(valid),
             output_distribution="normal",
@@ -253,6 +262,7 @@ def gmm_model_selection(
             row["delta_aic_from_k1"] = row["aic"] - reference_aic
         rows.extend(pair_rows)
     return pd.DataFrame(rows)
+
 
 def attach_labels(frame: pd.DataFrame, *, method="gmm") -> pd.DataFrame:
     """Return a copy with ``buzz_type`` and retain only derived columns."""

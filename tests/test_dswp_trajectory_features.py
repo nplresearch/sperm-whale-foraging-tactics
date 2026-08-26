@@ -29,8 +29,6 @@ def test_buzz_windows_use_release_trajectory(tmp_path):
             "buzz_end_s": [21.0],
         }
     )
-    result = buzz_straightness(
-        events, tmp_path / "trajectory_index.csv", windows_m=(10,)
-    )
+    result = buzz_straightness(events, tmp_path / "trajectory_index.csv", windows_m=(10,))
     assert np.isclose(result.loc[0, "straightness_before_10m"], 1.0)
     assert np.isclose(result.loc[0, "straightness_after_10m"], 1.0)

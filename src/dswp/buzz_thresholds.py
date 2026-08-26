@@ -1,4 +1,5 @@
 """Deterministic, release-safe buzz boundary and threshold diagnostics."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,7 +8,6 @@ import numpy as np
 import pandas as pd
 
 from dswp.io import validate_buzz_events
-
 
 WINDOW_S = 0.3
 WINDOW_STEP_S = 0.05
@@ -59,17 +59,13 @@ def click_rate_series(
     if len(smoothed_rate) != len(raw_rate):
         offset = (len(smoothed_rate) - len(raw_rate)) // 2
         smoothed_rate = smoothed_rate[offset : offset + len(raw_rate)]
-    return pd.DataFrame(
-        {"time_s": time_s, "raw_rate_hz": raw_rate, "rate_hz": smoothed_rate}
-    )
+    return pd.DataFrame({"time_s": time_s, "raw_rate_hz": raw_rate, "rate_hz": smoothed_rate})
 
 
 def _ici_cv(values: np.ndarray) -> float:
     ici = np.diff(np.sort(np.asarray(values, dtype=float)))
     return (
-        float(np.std(ici, ddof=1) / np.mean(ici))
-        if len(ici) >= 2 and np.mean(ici) > 0
-        else np.nan
+        float(np.std(ici, ddof=1) / np.mean(ici)) if len(ici) >= 2 and np.mean(ici) > 0 else np.nan
     )
 
 
@@ -80,9 +76,7 @@ def _segment_from_rate(
     # alpha * (maximum - minimum), without adding the minimum back.
     cutoff = threshold * (rates["rate_hz"].max() - rates["rate_hz"].min())
     mask = rates["rate_hz"].to_numpy() >= cutoff
-    regions = np.flatnonzero(
-        np.diff(np.r_[False, mask, False].astype(int))
-    ).reshape(-1, 2)
+    regions = np.flatnonzero(np.diff(np.r_[False, mask, False].astype(int))).reshape(-1, 2)
     if not len(regions):
         plateau_start = plateau_end = np.nan
         plateau_clicks = np.array([], dtype=float)
@@ -90,12 +84,8 @@ def _segment_from_rate(
         start_index, stop_index = regions[np.argmax(regions[:, 1] - regions[:, 0])]
         plateau_start = float(rates["time_s"].iloc[start_index])
         # The source implementation uses the first grid point after the region.
-        plateau_end = float(
-            rates["time_s"].iloc[min(stop_index, len(rates) - 1)]
-        )
-        plateau_clicks = clicks[
-            (clicks >= plateau_start) & (clicks <= plateau_end)
-        ]
+        plateau_end = float(rates["time_s"].iloc[min(stop_index, len(rates) - 1)])
+        plateau_clicks = clicks[(clicks >= plateau_start) & (clicks <= plateau_end)]
     start_s, end_s = float(clicks[0]), float(clicks[-1])
     return {
         "start_s": start_s,
@@ -145,9 +135,7 @@ def threshold_sweep(
         values = group["click_time_from_buzz_start_s"].to_numpy()
         rates = click_rate_series(values, window_s, step_s, smooth_window)
         for threshold in thresholds:
-            rows.append(
-                {"event_id": event_id, **_segment_from_rate(values, rates, threshold)}
-            )
+            rows.append({"event_id": event_id, **_segment_from_rate(values, rates, threshold)})
     return pd.DataFrame(rows)
 
 
@@ -184,15 +172,11 @@ def null_window_diagnostic(
                 latest_start = buzz_end - duration
                 starts = rng.uniform(buzz_start, latest_start, size=n_windows)
                 for start in starts:
-                    window_clicks = values[
-                        (values >= start) & (values <= start + duration)
-                    ]
+                    window_clicks = values[(values >= start) & (values <= start + duration)]
                     null_cvs.append(_ici_cv(window_clicks))
             valid_null = np.asarray(null_cvs, dtype=float)
             median_null = (
-                float(np.nanmedian(valid_null))
-                if np.isfinite(valid_null).any()
-                else np.nan
+                float(np.nanmedian(valid_null)) if np.isfinite(valid_null).any() else np.nan
             )
             plateau_cv = float(segment["plateau_ici_cv"])
             rows.append(
@@ -211,9 +195,7 @@ def null_window_diagnostic(
     return pd.DataFrame(rows)
 
 
-def threshold_summary(
-    sweep: pd.DataFrame, nulls: pd.DataFrame
-) -> pd.DataFrame:
+def threshold_summary(sweep: pd.DataFrame, nulls: pd.DataFrame) -> pd.DataFrame:
     """Aggregate the three SI threshold diagnostics across buzzes."""
     grouped = sweep.groupby("threshold")["plateau_ici_cv"]
     summary = grouped.agg(

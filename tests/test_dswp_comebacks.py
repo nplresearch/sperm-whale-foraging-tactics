@@ -1,5 +1,5 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
@@ -24,9 +24,7 @@ def test_return_detector_uses_recent_qualifying_reference():
             [2.0, 0.0, 300.0],
         ]
     )
-    returns, references = find_matched_comeback_points(
-        xyz, close_m=10, far_m=100
-    )
+    returns, references = find_matched_comeback_points(xyz, close_m=10, far_m=100)
     assert list(returns) == [2, 4]
     assert list(references) == [0, 2]
 
@@ -75,9 +73,7 @@ def test_event_grouping_context_and_cmh():
                     ]
                     * count
                 )
-    strata, summary = stratified_comeback_association(
-        pd.DataFrame(association_rows)
-    )
+    strata, summary = stratified_comeback_association(pd.DataFrame(association_rows))
     assert len(strata) == 2
     assert summary["n_buzzes"] == 24
     assert summary["pooled_odds_ratio"] > 1

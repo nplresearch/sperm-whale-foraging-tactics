@@ -8,13 +8,13 @@ source tables are written under `results/` or are the checksummed inputs under
 Rendered figures may be version-controlled for convenient comparison, but the
 code and numerical result tables are authoritative.
 
-The trajectory outputs include the corrected buzz-centred squared-displacement
-figure based on dive-local buzz times and registered GMM labels. The legacy
-eight-whale null figure is forensic provenance and is not pipeline-generated.
+The trajectory outputs include the manuscript buzz-centred
+squared-displacement figure based on dive-local buzz times and registered GMM
+labels.
 
 The current pipeline does not claim pixel-identical recomposition of the final
 multi-panel manuscript artwork or the location-bearing regional map. The CETI
 release is buzz-level and therefore excludes reconstructed-path artwork and the
-legacy high-frequency roll trace. Azores manuscript components are generated
+high-frequency roll trace. Azores manuscript components are generated
 in memory by the checksummed local-input notebook; they are not silently
 regenerated when those external CC0 source files are absent.

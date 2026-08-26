@@ -1,0 +1,13 @@
+Repository-authored derived data are licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0):
+
+https://creativecommons.org/licenses/by/4.0/
+
+This licence applies to the pseudonymized derived tables and local-coordinate
+reconstructed trajectories distributed under `data/dswp/` and
+`data/ceti2024/`, unless a file states otherwise. Attribution should cite the
+accompanying paper and this repository release.
+
+The licence does not apply to raw DSWP or Project CETI recordings, which are
+not distributed here. The Azores source files are not mirrored in this
+repository and remain governed by the CC0 terms of their Dryad record.

@@ -1,4 +1,5 @@
 """Buzz-centred features computed from released reconstructed trajectories."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -23,12 +24,8 @@ def resample_path_spatial(xyz: np.ndarray, step_m: float = 1.0) -> np.ndarray:
     keep = np.r_[True, np.diff(cumulative) > 0]
     cumulative = cumulative[keep]
     xyz = xyz[keep]
-    target = np.linspace(
-        0.0, cumulative[-1], int(cumulative[-1] / step_m) + 1
-    )
-    return np.column_stack(
-        [np.interp(target, cumulative, xyz[:, axis]) for axis in range(3)]
-    )
+    target = np.linspace(0.0, cumulative[-1], int(cumulative[-1] / step_m) + 1)
+    return np.column_stack([np.interp(target, cumulative, xyz[:, axis]) for axis in range(3)])
 
 
 def straightness_index(xyz: np.ndarray, step_m: float = 1.0) -> float:
@@ -72,9 +69,7 @@ def buzz_straightness(
         meta = metadata.loc[trajectory_id]
         fs_hz = float(meta["sampling_rate_hz"])
         xyz = load_trajectory(index_path.parent / meta["file"])
-        cumulative = np.r_[
-            0.0, np.cumsum(np.linalg.norm(np.diff(xyz, axis=0), axis=1))
-        ]
+        cumulative = np.r_[0.0, np.cumsum(np.linalg.norm(np.diff(xyz, axis=0), axis=1))]
         for event in group.itertuples(index=False):
             start = max(0, int(float(event.buzz_start_s) * fs_hz))
             end = min(len(xyz) - 1, int(float(event.buzz_end_s) * fs_hz))
@@ -84,9 +79,7 @@ def buzz_straightness(
             for window in windows_m:
                 before_distance = cumulative[start] - window
                 before = (
-                    0
-                    if before_distance < 0
-                    else int(np.searchsorted(cumulative, before_distance))
+                    0 if before_distance < 0 else int(np.searchsorted(cumulative, before_distance))
                 )
                 after_distance = cumulative[end] + window
                 after = (

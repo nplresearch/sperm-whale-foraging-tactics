@@ -1,7 +1,7 @@
 # Data directory
 
-This directory contains only public-source instructions and pseudonymized
-derived inputs prepared for data-owner review. It must conform to the top-level
+This directory contains only public-source instructions and approved,
+pseudonymized derived inputs. It must conform to the top-level
 [data policy](../DATA_POLICY.md).
 
 ## Layout
@@ -19,4 +19,4 @@ Only its validated outputs cross into this repository.
 Run `python scripts/build_data_manifest.py` after any approved input changes.
 Every analytical input, including each reconstructed trajectory, is then
 recorded with its schema version, row/sample count, SHA-256 checksum, and
-release-review status.
+release status.

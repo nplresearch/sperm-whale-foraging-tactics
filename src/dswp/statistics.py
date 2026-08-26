@@ -1,22 +1,33 @@
 """Non-parametric contrasts and buzz-sequence summaries."""
+
 import numpy as np
 import pandas as pd
 from scipy.stats import chi2_contingency, ks_2samp, mannwhitneyu, ttest_ind
 
+
 def cliffs_delta(a, b) -> float:
     """P(A > B) - P(A < B); positive values mean A tends to be larger."""
     a, b = np.asarray(a, float), np.asarray(b, float)
-    if not len(a) or not len(b): return np.nan
+    if not len(a) or not len(b):
+        return np.nan
     return float(((a[:, None] > b).sum() - (a[:, None] < b).sum()) / (len(a) * len(b)))
+
 
 def compare_groups(frame, metric, *, label="buzz_type") -> dict:
     """Two-sided Mann--Whitney and Cliff's delta for A versus B."""
     a = frame.loc[frame[label].eq("A"), metric].dropna().to_numpy()
     b = frame.loc[frame[label].eq("B"), metric].dropna().to_numpy()
-    out = {"metric": metric, "n_A": len(a), "n_B": len(b),
-           "median_A": np.median(a) if len(a) else np.nan, "median_B": np.median(b) if len(b) else np.nan,
-           "cliffs_delta": cliffs_delta(a, b)}
-    out["U"], out["p_value"] = mannwhitneyu(a, b, alternative="two-sided") if len(a) and len(b) else (np.nan, np.nan)
+    out = {
+        "metric": metric,
+        "n_A": len(a),
+        "n_B": len(b),
+        "median_A": np.median(a) if len(a) else np.nan,
+        "median_B": np.median(b) if len(b) else np.nan,
+        "cliffs_delta": cliffs_delta(a, b),
+    }
+    out["U"], out["p_value"] = (
+        mannwhitneyu(a, b, alternative="two-sided") if len(a) and len(b) else (np.nan, np.nan)
+    )
     return out
 
 
@@ -128,9 +139,7 @@ def roll_speed_bin_tests(
     out = pd.DataFrame(rows)
     if out.empty:
         return out
-    out["p_value_bonferroni"] = np.minimum(
-        1.0, out["p_value"] * len(out)
-    )
+    out["p_value_bonferroni"] = np.minimum(1.0, out["p_value"] * len(out))
     out["significant_0_05"] = out["p_value_bonferroni"] < 0.05
     return out
 
@@ -157,12 +166,15 @@ def pause_distribution_tests(
         "ks_p": float(ks.pvalue),
     }
 
+
 def _counts(sequences):
     counts = {"S": {"A": 0, "B": 0}, "A": {"A": 0, "B": 0, "E": 0}, "B": {"A": 0, "B": 0, "E": 0}}
     for sequence in sequences:
-        if not sequence: continue
+        if not sequence:
+            continue
         counts["S"][sequence[0]] += 1
-        for left, right in zip(sequence, sequence[1:]): counts[left][right] += 1
+        for left, right in zip(sequence, sequence[1:]):
+            counts[left][right] += 1
         counts[sequence[-1]]["E"] += 1
     return counts
 
@@ -206,9 +218,7 @@ def _markov_probabilities_with_gaps(
         for right in destinations:
             displayed_counts[(left, right)] = counts[(left, right)]
             probabilities[(left, right)] = (
-                counts[(left, right)] / denominator
-                if denominator
-                else np.nan
+                counts[(left, right)] / denominator if denominator else np.nan
             )
     return probabilities, displayed_counts
 
@@ -241,9 +251,7 @@ def markov_leave_subset_out(
         raise ValueError("Missing columns: " + ", ".join(sorted(missing)))
     if n_resamples < 1:
         raise ValueError("n_resamples must be positive")
-    n_exclude_max = (
-        n_exclude_min if n_exclude_max is None else n_exclude_max
-    )
+    n_exclude_max = n_exclude_min if n_exclude_max is None else n_exclude_max
     if not 0 <= n_exclude_min <= n_exclude_max:
         raise ValueError("Require 0 <= n_exclude_min <= n_exclude_max")
 
@@ -255,9 +263,7 @@ def markov_leave_subset_out(
     draws = {edge: [] for edge in point}
     for _ in range(n_resamples):
         n_exclude = int(rng.integers(n_exclude_min, n_exclude_max + 1))
-        excluded = rng.choice(
-            groups, size=min(n_exclude, len(groups)), replace=False
-        )
+        excluded = rng.choice(groups, size=min(n_exclude, len(groups)), replace=False)
         probabilities, _ = _markov_probabilities_with_gaps(
             frame.loc[~frame[group_col].isin(excluded)],
             label=label,
@@ -273,14 +279,14 @@ def markov_leave_subset_out(
                 "probability": point[(left, right)],
                 "mean_probability": (
                     float(np.mean(finite_draws))
-                    if len(finite_draws := np.asarray(
-                        draws[(left, right)]
-                    )[np.isfinite(draws[(left, right)])])
+                    if len(
+                        finite_draws := np.asarray(draws[(left, right)])[
+                            np.isfinite(draws[(left, right)])
+                        ]
+                    )
                     else np.nan
                 ),
-                "std_probability": (
-                    float(np.std(finite_draws)) if len(finite_draws) else np.nan
-                ),
+                "std_probability": (float(np.std(finite_draws)) if len(finite_draws) else np.nan),
                 "count": counts[(left, right)],
                 "resampling_unit": group_col,
                 "n_resamples": n_resamples,
@@ -298,21 +304,42 @@ def markov_with_ci(frame, *, label="buzz_type", n_boot=2000, seed=42) -> pd.Data
     seqs = []
     for _, g in frame.groupby(["deployment_id", "dive_id"], sort=False):
         seq = [x for x in g.sort_values("buzz_start_s")[label] if x in ("A", "B")]
-        if seq: seqs.append(seq)
-    if not seqs: return pd.DataFrame(columns=["from_state", "to_state", "probability", "ci_low", "ci_high", "count"])
+        if seq:
+            seqs.append(seq)
+    if not seqs:
+        return pd.DataFrame(
+            columns=["from_state", "to_state", "probability", "ci_low", "ci_high", "count"]
+        )
+
     def probabilities(seqs):
         counts = _counts(seqs)
-        return {(f, t): c / sum(dest.values()) if sum(dest.values()) else np.nan
-                for f, dest in counts.items() for t, c in dest.items()}, counts
-    point, counts = probabilities(seqs); rng = np.random.default_rng(seed)
+        return {
+            (f, t): c / sum(dest.values()) if sum(dest.values()) else np.nan
+            for f, dest in counts.items()
+            for t, c in dest.items()
+        }, counts
+
+    point, counts = probabilities(seqs)
+    rng = np.random.default_rng(seed)
     draws = {key: [] for key in point}
     for _ in range(n_boot):
         sampled = [seqs[i] for i in rng.integers(0, len(seqs), len(seqs))]
         p, _ = probabilities(sampled)
-        for key, value in p.items(): draws[key].append(value)
-    return pd.DataFrame([{"from_state": f, "to_state": t, "probability": point[(f,t)],
-                          "ci_low": np.nanpercentile(draws[(f,t)], 2.5), "ci_high": np.nanpercentile(draws[(f,t)], 97.5),
-                          "count": counts[f][t]} for f, t in point])
+        for key, value in p.items():
+            draws[key].append(value)
+    return pd.DataFrame(
+        [
+            {
+                "from_state": f,
+                "to_state": t,
+                "probability": point[(f, t)],
+                "ci_low": np.nanpercentile(draws[(f, t)], 2.5),
+                "ci_high": np.nanpercentile(draws[(f, t)], 97.5),
+                "count": counts[f][t],
+            }
+            for f, t in point
+        ]
+    )
 
 
 def geometry_association(frame, *, label="buzz_type") -> tuple[pd.DataFrame, dict]:
@@ -324,16 +351,17 @@ def geometry_association(frame, *, label="buzz_type") -> tuple[pd.DataFrame, dic
     }
     if missing := required - set(frame):
         raise ValueError("Missing columns: " + ", ".join(sorted(missing)))
-    values = frame[frame[label].isin(["A", "B"])].dropna(
-        subset=["vertical_direction_before", "vertical_direction_after"]
-    ).copy()
+    values = (
+        frame[frame[label].isin(["A", "B"])]
+        .dropna(subset=["vertical_direction_before", "vertical_direction_after"])
+        .copy()
+    )
     before = np.where(values["vertical_direction_before"] >= 0, "down", "up")
     after = np.where(values["vertical_direction_after"] >= 0, "down", "up")
     values["geometry"] = np.char.add(np.char.add(before, "_to_"), after)
     order = ["down_to_down", "up_to_up", "down_to_up", "up_to_down"]
-    counts = (
-        pd.crosstab(values[label], values["geometry"])
-        .reindex(index=["A", "B"], columns=order, fill_value=0)
+    counts = pd.crosstab(values[label], values["geometry"]).reindex(
+        index=["A", "B"], columns=order, fill_value=0
     )
     chi2, p_value, dof, expected = chi2_contingency(counts)
     residuals = (counts.to_numpy() - expected) / np.sqrt(expected)

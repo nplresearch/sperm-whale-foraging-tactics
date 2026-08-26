@@ -18,13 +18,12 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-from pathlib import Path
 import re
 import sys
 import zipfile
+from pathlib import Path
 
 import numpy as np
-
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_FILE_BYTES = 95 * 1024 * 1024
@@ -58,7 +57,7 @@ PRIVATE_TEXT_PATTERNS = {
     "private Dropbox URL": re.compile(
         r"https?://(?:www\.)?(?:dropbox\.com|dropboxusercontent\.com)/", re.I
     ),
-    "legacy private data path": re.compile(r"(?:\.\./)+Data/(?:big|Name_data)/"),
+    "private data path": re.compile(r"(?:\.\./)+Data/(?:big|Name_data)/"),
 }
 
 # Source tag formats are allowed only in the documentation/notebook that points
@@ -162,9 +161,7 @@ def check_npz(path: Path, relative: Path, errors: list[str]) -> None:
                     else:
                         _, _, dtype = np.lib.format.read_array_header_2_0(handle)
                 if dtype.kind in {"O", "S", "U", "V"}:
-                    errors.append(
-                        f"{relative}: non-numeric NPZ member {name!r} ({dtype})"
-                    )
+                    errors.append(f"{relative}: non-numeric NPZ member {name!r} ({dtype})")
     except Exception as exc:  # noqa: BLE001 - report every unreadable release archive
         errors.append(f"{relative}: unsafe or unreadable NPZ archive ({exc})")
 

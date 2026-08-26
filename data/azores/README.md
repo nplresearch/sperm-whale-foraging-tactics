@@ -32,5 +32,5 @@ The final manuscript-facing nearest-corner implementation excludes observations
 exactly equidistant from the two corners instead of applying an arbitrary
 tie-break. It therefore yields 28 Type A, 28 Type B, and two unclassified
 boundary ties. The export also includes a disjoint 29/29 assignment as a
-sensitivity analysis. See `docs/known_issues.md` for provenance and the
+sensitivity analysis. Markov confidence intervals use the documented
 duplicate-preserving dive-bootstrap procedure.

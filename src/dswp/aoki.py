@@ -11,6 +11,7 @@ geometry.  Here it is applied to the same reconstructed 3-D speed samples and
 first-click--last-click intervals as the operative DSWP energetic model so
 that the two formulations differ in mechanics rather than event selection.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -59,15 +60,8 @@ def aoki_energy_from_speed_series(
     """Return Aoki drag-related locomotor energy for one observed interval."""
     t = np.asarray(time_s, dtype=float)
     v = np.asarray(speed_m_s, dtype=float)
-    if (
-        len(t) != len(v)
-        or len(t) < 2
-        or not np.isfinite(t).all()
-        or not np.isfinite(v).all()
-    ):
-        raise ValueError(
-            "time and speed must be equal-length finite arrays with >=2 samples"
-        )
+    if len(t) != len(v) or len(t) < 2 or not np.isfinite(t).all() or not np.isfinite(v).all():
+        raise ValueError("time and speed must be equal-length finite arrays with >=2 samples")
     if np.any(np.diff(t) <= 0) or np.any(v < 0):
         raise ValueError("time must increase strictly and speed be non-negative")
 
@@ -124,12 +118,8 @@ def event_aoki_energy_from_trajectories(
             if not np.isfinite(speed).all() or np.any(speed < 0):
                 continue
             time_s = (np.arange(len(speed), dtype=float) + 0.5) / fs_hz
-            result = aoki_energy_from_speed_series(
-                time_s, speed, parameters=parameters
-            )
-            result.update(
-                {"event_id": event.event_id, "trajectory_id": trajectory_id}
-            )
+            result = aoki_energy_from_speed_series(time_s, speed, parameters=parameters)
+            result.update({"event_id": event.event_id, "trajectory_id": trajectory_id})
             for column in (
                 "deployment_id",
                 "individual_id",

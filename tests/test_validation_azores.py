@@ -19,7 +19,6 @@ from validation.azores import (
     validate_azores_sources,
 )
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -44,9 +43,7 @@ def test_azores_validator_rejects_unreviewed_bytes(tmp_path):
         validate_azores_sources(tmp_path)
 
 
-def test_azores_source_finder_uses_and_validates_explicit_directory(
-    tmp_path, monkeypatch
-):
+def test_azores_source_finder_uses_and_validates_explicit_directory(tmp_path, monkeypatch):
     source = tmp_path / "open-azores-data"
     source.mkdir()
     for filename in AZORES_FILES:

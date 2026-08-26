@@ -17,7 +17,7 @@ between two acoustic–kinematic prey-capture tactics.
 | Azores | Prey-field validation | Final 28/28/two-tie analysis from checksummed data in the open Dryad record |
 | Project CETI, Dominica (2024) | Independent validation | Buzz-level acoustic and kinematic validation |
 
-The release begins from publication-safe derived data. It does not contain raw
+The repository begins from publication-safe derived data. It does not contain raw
 audio, raw tag sensor streams, absolute GPS positions, field identifiers, or
 the private identifier crosswalks. The DSWP trajectories are reconstructed
 paths in local coordinates, not raw movement records.
@@ -64,32 +64,28 @@ The public workflow reproduces the numerical analyses reported in the paper
 from derived or openly archived inputs. Upstream signal processing from the raw
 DTAG records is outside this repository. The final regional map is a
 presentation asset because its location-bearing inputs are not released. The
-CETI release is intentionally limited to the buzz-level validation; reviewed
-reconstructed CETI paths and the legacy high-frequency roll trace are not part
+CETI release is intentionally limited to the buzz-level validation;
+reconstructed CETI paths and the high-frequency roll time course are not part
 of this version.
-
-These scope choices do not change the manuscript's numerical results. The
-technical audit trail, including the accepted exploratory comeback-analysis
-provenance, is kept in [`docs/known_issues.md`](docs/known_issues.md) without
-making it the entry point for readers.
 
 ## Version and citation
 
-The frozen analysis underlying the current production manuscript is tagged
-`production-code-2026-08-25`; the paired manuscript commit is `435c3d0`.
-Citation metadata are provided in [`CITATION.cff`](CITATION.cff). Add the
-bioRxiv or journal DOI to that file once the manuscript record exists, and add
-the repository archival DOI after the public archive is minted.
+Version 1.0.0 accompanies the submitted manuscript and the bioRxiv preprint:
+
+> Zaffina, L., Monti, C., Poetto, S., et al. (2026). *Sperm whale foraging
+> combines persistent search with flexible prey-capture tactics*. bioRxiv.
+> <https://doi.org/10.64898/2026.07.29.741536>
+
+Machine-readable citation metadata are provided in
+[`CITATION.cff`](CITATION.cff). The paired manuscript source is commit
+`435c3d0`.
 
 ## Data use and licensing
 
-The repository is currently private while the data owners confirm the final
-derived-data release and the project selects software and data licences. Until
-the corresponding licence files are added, the repository is available for
-review but does not grant permission for public reuse. The proposed licence
-split and the short approval checklist are in
-[`LICENSING.md`](LICENSING.md) and
-[`docs/release_readiness.md`](docs/release_readiness.md).
+Analysis code is released under the MIT License. Repository-authored derived
+tables and local-coordinate reconstructed paths are released under CC BY 4.0.
+See [`LICENSING.md`](LICENSING.md), [`LICENSE`](LICENSE), and
+[`LICENSE-DATA`](LICENSE-DATA) for the exact scope.
 
 The Azores source dataset remains governed by its own CC0 terms at
 <https://doi.org/10.5061/dryad.tqjq2bvwg>.

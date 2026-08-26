@@ -5,24 +5,57 @@ opaque, release-specific tokens; do not use names, tag serial numbers, dates,
 locations, or raw-sample timestamps.  Kinematic columns are summaries computed
 before release from reconstructed trajectories, never sensor streams.
 """
+
 from pathlib import Path
+
 import pandas as pd
 
 ID_COLUMNS = ("deployment_id", "dive_id", "buzz_order_in_dive", "buzz_start_s")
 CLASSIFIER_COLUMNS = ("ramp_up_duration_s", "avg_speed_3d_m_s")
 OPTIONAL_COLUMNS = (
-    "individual_id", "trajectory_id", "event_id", "avg_vertical_speed_m_s",
-    "avg_roll_speed_deg_s", "pitch_adaptive_speed_3d_m_s", "avg_depth_m",
-    "median_click_rate_hz", "pre_buzz_vertical_velocity_m_s",
-    "post_buzz_pause_s", "vertical_direction_before", "vertical_direction_after",
+    "individual_id",
+    "trajectory_id",
+    "event_id",
+    "avg_vertical_speed_m_s",
+    "avg_roll_speed_deg_s",
+    "pitch_adaptive_speed_3d_m_s",
+    "avg_depth_m",
+    "median_click_rate_hz",
+    "pre_buzz_vertical_velocity_m_s",
+    "post_buzz_pause_s",
+    "vertical_direction_before",
+    "vertical_direction_after",
     "deployment_buzz_start_s",
-    "straightness_before_20m", "straightness_after_20m", "interbuzz_dt_s",
-    "interbuzz_path3d_m", "buzz_end_s", "plateau_start_s", "plateau_end_s",
-    "plateau_duration_s", "terminal_duration_s", "buzz_duration_s", "n_clicks",
-    "max_click_rate_hz", "buzz_type", "reference_comeback", "comeback_buzz",
+    "straightness_before_20m",
+    "straightness_after_20m",
+    "interbuzz_dt_s",
+    "interbuzz_path3d_m",
+    "buzz_end_s",
+    "plateau_start_s",
+    "plateau_end_s",
+    "plateau_duration_s",
+    "terminal_duration_s",
+    "buzz_duration_s",
+    "n_clicks",
+    "max_click_rate_hz",
+    "buzz_type",
+    "reference_comeback",
+    "comeback_buzz",
     "post_buzz_vertical_velocity_m_s",
 )
-FORBIDDEN_TOKENS = ("whale", "animal", "name", "latitude", "longitude", "gps", "audio", "wav", "mat", "raw")
+FORBIDDEN_TOKENS = (
+    "whale",
+    "animal",
+    "name",
+    "latitude",
+    "longitude",
+    "gps",
+    "audio",
+    "wav",
+    "mat",
+    "raw",
+)
+
 
 def validate_buzz_events(frame: pd.DataFrame, *, require_classifier: bool = True) -> pd.DataFrame:
     """Validate a derived event table and return a copy with stable dtypes.
@@ -58,6 +91,7 @@ def validate_buzz_events(frame: pd.DataFrame, *, require_classifier: bool = True
     if (out["buzz_order_in_dive"] < 1).any():
         raise ValueError("buzz_order_in_dive must start at 1")
     return out
+
 
 def load_buzz_events(path: str | Path, *, require_classifier: bool = True) -> pd.DataFrame:
     """Read a CSV or Parquet derived-event table after safety/schema checks."""
