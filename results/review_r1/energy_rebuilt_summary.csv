@@ -1,0 +1,5 @@
+basis,n_A,n_B,whales_with_both,A_kJ,B_kJ,B_over_A,whales_B_gt_A,median_power_over_rest
+"drag at OCDR speed, |pitch|>=30, coverage>=0.5, 13.5 t",179,686,18,24.11562520968289,63.91411482613214,2.6503196276441296,18,1.8705549682361802
+"drag at OCDR speed, |pitch|>=45, coverage>=0.5, 13.5 t",60,359,15,26.8741121182447,62.064869866563726,2.309466805581577,15,1.804273953101052
+stroke index: buzz_stroke_rms_deg,1346,1142,20,,,1.2687368178873215,18,
+stroke index: stroke_effort_deg_s,1346,1142,20,,,2.393266483296025,20,

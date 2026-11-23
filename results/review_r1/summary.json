@@ -1,0 +1,25 @@
+{
+  "regime_order": [
+    "fallback",
+    "depth_derived",
+    "clipped"
+  ],
+  "step_regime_fractions": {
+    "all": [
+      0.7579,
+      0.2396,
+      0.0024
+    ],
+    "foraging": [
+      0.9115,
+      0.0859,
+      0.0026
+    ]
+  },
+  "fallback_steps_with_horizontal_speed_above_0.9": 0,
+  "possibly_level_fallback_steps_classed_depth": 4812,
+  "production_energy_reproduction": {
+    "n_matched": 3489,
+    "max_rel_diff": 2.220446049250313e-16
+  }
+}

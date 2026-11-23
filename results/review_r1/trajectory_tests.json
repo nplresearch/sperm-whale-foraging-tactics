@@ -1,0 +1,439 @@
+{
+  "primary_setting": {
+    "block_s": 5.0,
+    "threshold_deg": 30.0
+  },
+  "S_sensitivity": [
+    {
+      "block_s": 2.0,
+      "threshold_deg": 20.0,
+      "dives": 209,
+      "median_steps": 13.0,
+      "median_step_s": 6.0,
+      "median_mu": 1.595,
+      "share_best_power_law": 0.056,
+      "share_best_geometric": 0.0,
+      "share_best_two_geometric": 0.944
+    },
+    {
+      "block_s": 2.0,
+      "threshold_deg": 30.0,
+      "dives": 209,
+      "median_steps": 4.0,
+      "median_step_s": 6.0,
+      "median_mu": 1.55,
+      "share_best_power_law": 0.143,
+      "share_best_geometric": 0.0,
+      "share_best_two_geometric": 0.857
+    },
+    {
+      "block_s": 2.0,
+      "threshold_deg": 45.0,
+      "dives": 209,
+      "median_steps": 1.0,
+      "median_step_s": 8.0,
+      "median_mu": 1.549,
+      "share_best_power_law": 0.0,
+      "share_best_geometric": 0.2,
+      "share_best_two_geometric": 0.8
+    },
+    {
+      "block_s": 5.0,
+      "threshold_deg": 20.0,
+      "dives": 209,
+      "median_steps": 19.0,
+      "median_step_s": 20.0,
+      "median_mu": 1.681,
+      "share_best_power_law": 0.05,
+      "share_best_geometric": 0.025,
+      "share_best_two_geometric": 0.925
+    },
+    {
+      "block_s": 5.0,
+      "threshold_deg": 30.0,
+      "dives": 209,
+      "median_steps": 7.0,
+      "median_step_s": 46.25,
+      "median_mu": 1.636,
+      "share_best_power_law": 0.0,
+      "share_best_geometric": 0.133,
+      "share_best_two_geometric": 0.867
+    },
+    {
+      "block_s": 5.0,
+      "threshold_deg": 45.0,
+      "dives": 209,
+      "median_steps": 2.0,
+      "median_step_s": 60.0,
+      "median_mu": 1.517,
+      "share_best_power_law": 0.0,
+      "share_best_geometric": 0.167,
+      "share_best_two_geometric": 0.833
+    },
+    {
+      "block_s": 10.0,
+      "threshold_deg": 20.0,
+      "dives": 209,
+      "median_steps": 23.0,
+      "median_step_s": 25.0,
+      "median_mu": 1.831,
+      "share_best_power_law": 0.0,
+      "share_best_geometric": 0.283,
+      "share_best_two_geometric": 0.717
+    },
+    {
+      "block_s": 10.0,
+      "threshold_deg": 30.0,
+      "dives": 209,
+      "median_steps": 9.0,
+      "median_step_s": 62.5,
+      "median_mu": 1.858,
+      "share_best_power_law": 0.0,
+      "share_best_geometric": 0.316,
+      "share_best_two_geometric": 0.684
+    },
+    {
+      "block_s": 10.0,
+      "threshold_deg": 45.0,
+      "dives": 209,
+      "median_steps": 3.0,
+      "median_step_s": 117.5,
+      "median_mu": 1.825,
+      "share_best_power_law": 0.143,
+      "share_best_geometric": 0.571,
+      "share_best_two_geometric": 0.286
+    }
+  ],
+  "S_primary_model_choice": {
+    "dives_fitted": 15,
+    "best": {
+      "two_geometric": 13,
+      "geometric": 2
+    },
+    "best_by_2_aic": {
+      "two_geometric": 12,
+      "tie": 2,
+      "geometric": 1
+    },
+    "median_mu": 1.6359838801817381
+  },
+  "S_pooled_fit": {
+    "kmin": 1,
+    "mu": 1.4752090266646378,
+    "n_tail": 2677,
+    "aic_power_law": 18033.82528028352,
+    "aic_geometric": 20358.548717160058,
+    "aic_two_geometric": 17708.81798493946,
+    "best": "two_geometric",
+    "best_by_2": "two_geometric"
+  },
+  "S_per_whale_model_choice": {
+    "2s_20deg": {
+      "whales_fitted": 18,
+      "two_geometric": 15,
+      "power_law": 2,
+      "geometric": 1,
+      "median_mu": 1.5
+    },
+    "2s_30deg": {
+      "whales_fitted": 10,
+      "two_geometric": 10,
+      "median_mu": 1.497
+    },
+    "2s_45deg": {
+      "whales_fitted": 8,
+      "two_geometric": 7,
+      "power_law": 1,
+      "median_mu": 1.431
+    },
+    "5s_20deg": {
+      "whales_fitted": 20,
+      "two_geometric": 15,
+      "geometric": 4,
+      "power_law": 1,
+      "median_mu": 1.605
+    },
+    "5s_30deg": {
+      "whales_fitted": 15,
+      "two_geometric": 13,
+      "geometric": 1,
+      "power_law": 1,
+      "median_mu": 1.445
+    },
+    "5s_45deg": {
+      "whales_fitted": 7,
+      "two_geometric": 4,
+      "geometric": 2,
+      "power_law": 1,
+      "median_mu": 1.967
+    },
+    "10s_20deg": {
+      "whales_fitted": 20,
+      "two_geometric": 14,
+      "geometric": 6,
+      "median_mu": 2.021
+    },
+    "10s_30deg": {
+      "whales_fitted": 18,
+      "two_geometric": 12,
+      "geometric": 6,
+      "median_mu": 1.799
+    },
+    "10s_45deg": {
+      "whales_fitted": 7,
+      "power_law": 3,
+      "geometric": 2,
+      "two_geometric": 2,
+      "median_mu": 2.237
+    }
+  },
+  "M_step_vs_distance_to_buzz": {
+    "median_dive_rho": 0.3576176452748121,
+    "whales": 9,
+    "median": -0.35867755584873356,
+    "n_negative": 8,
+    "wilcoxon_p": 0.0078125,
+    "note": "n_negative counts whales with positive rho (steps longer far from buzzes)"
+  },
+  "M_all_steps_mixed": {
+    "formula": "np.log(step_s) ~ np.log(to_buzz_s + 1)",
+    "n": 2677,
+    "whales": 20,
+    "coef": 0.4376674507376109,
+    "ci_low": 0.39619756363048025,
+    "ci_high": 0.4791373378447415,
+    "p": 4.7092795108149005e-95,
+    "converged": true,
+    "caveat": "biased: a step without a buzz inside sits >= half its length from the nearest buzz"
+  },
+  "M2_block_turn_probability": {
+    "blocks": 64396,
+    "odds_ratio_per_log_s": 0.5692062267349338,
+    "ci_low": 0.517844083039029,
+    "ci_high": 0.6256627026660493,
+    "p": 1.6325708133885464e-31,
+    "by_bin": {
+      "[0.0, 10.0)": 0.0806,
+      "[10.0, 30.0)": 0.0293,
+      "[30.0, 60.0)": 0.02,
+      "[60.0, 120.0)": 0.0222,
+      "[120.0, 240.0)": 0.0215,
+      "[240.0, inf)": 0.037
+    }
+  },
+  "M3_step_rho_permutation": {
+    "observed_rho": 0.34982432389375656,
+    "null_median": -0.007536419608815015,
+    "null_95th": 0.02659932415457735,
+    "p": 0.004975124378109453
+  },
+  "L_mu_vs_buzz_rate": {
+    "formula": "mu ~ buzz_rate_per_min + depth_100m",
+    "n": 15,
+    "whales": 7,
+    "coef": -0.6996210615656783,
+    "ci_low": -1.2280466777494767,
+    "ci_high": -0.1711954453818798,
+    "p": 0.00946077897106062,
+    "converged": true
+  },
+  "L_alpha_msd_vs_buzz_rate": {
+    "formula": "alpha_msd ~ buzz_rate_per_min + depth_100m",
+    "n": 209,
+    "whales": 20,
+    "coef": -0.07620241564845719,
+    "ci_low": -0.12181934318154541,
+    "ci_high": -0.030585488115368965,
+    "p": 0.0010600231784820668,
+    "converged": true
+  },
+  "L_alpha_horizontal_vs_buzz_rate": {
+    "formula": "alpha_horizontal ~ buzz_rate_per_min + depth_100m",
+    "n": 209,
+    "whales": 20,
+    "coef": -0.032550925269601544,
+    "ci_low": -0.08414940085344544,
+    "ci_high": 0.019047550314242344,
+    "p": 0.21629345672959466,
+    "converged": true
+  },
+  "L_turns_per_min_vs_buzz_rate": {
+    "formula": "turns_per_min ~ buzz_rate_per_min + depth_100m",
+    "n": 209,
+    "whales": 20,
+    "coef": 0.18628515894663566,
+    "ci_low": -0.38005759931292293,
+    "ci_high": 0.7526279172061943,
+    "p": 0.5191318867283241,
+    "converged": true
+  },
+  "L_persistence_60s_vs_buzz_rate": {
+    "formula": "persistence_60s ~ buzz_rate_per_min + depth_100m",
+    "n": 209,
+    "whales": 20,
+    "coef": -0.0025297073842790907,
+    "ci_low": -0.072873012213575,
+    "ci_high": 0.06781359744501683,
+    "p": 0.9438077802846007,
+    "converged": true
+  },
+  "A_post_minus_pre_turn_rate": {
+    "buzzes": 2687,
+    "median_pre_deg_s": 2.9122798774995595,
+    "median_post_deg_s": 2.864508656238839,
+    "whales": 20,
+    "median": 0.06390052806444185,
+    "n_negative": 8,
+    "wilcoxon_p": 0.2773551940917969,
+    "note": "n_negative counts whales turning more after than before"
+  },
+  "A_type_contrast": {
+    "median_diff_A": -0.04773931265787201,
+    "median_diff_B": -0.20527494398067025,
+    "whales": 20,
+    "median": -0.2597176208021704,
+    "n_negative": 14,
+    "wilcoxon_p": 0.023950576782226562
+  },
+  "A_decay_with_time_since_buzz": {
+    "bins_s": [
+      "0",
+      "30",
+      "60",
+      "120",
+      "240",
+      "inf"
+    ],
+    "population_curve_deg_s": [
+      3.511,
+      2.961,
+      3.011,
+      3.022,
+      3.321
+    ],
+    "whales": 20,
+    "median": -0.25,
+    "n_negative": 12,
+    "wilcoxon_p": 0.06974164477787344,
+    "note": "n_negative counts whales whose turning declines with time since the last buzz"
+  },
+  "V_bouts": {
+    "bout_threshold_s": 75.77553580050646,
+    "bouts": 2406,
+    "interior_multi_buzz_bouts": 616,
+    "median_buzzes_per_bout": 1.0
+  },
+  "V_residence_vs_travel": {
+    "formula": "np.log(residence_s) ~ np.log(travel_s) + rel_time",
+    "n": 616,
+    "whales": 19,
+    "coef": -0.1342345858826793,
+    "ci_low": -0.24143331599484008,
+    "ci_high": -0.027035855770518535,
+    "p": 0.014116974475055093,
+    "converged": true
+  },
+  "V_buzzes_vs_travel": {
+    "rate_ratio_per_log_s": 0.9274998198359888,
+    "ci_low": 0.8754656279498338,
+    "ci_high": 0.982626716951001,
+    "p": 0.010621502448503095,
+    "n": 616
+  },
+  "V_residence_vs_travel_incl_last_bout": {
+    "formula": "np.log(residence_s) ~ np.log(travel_s) + rel_time",
+    "n": 697,
+    "whales": 19,
+    "coef": -0.08334703502238612,
+    "ci_low": -0.18184729643040748,
+    "ci_high": 0.015153226385635252,
+    "p": 0.09722784221505662,
+    "converged": true
+  },
+  "R1_net_heading_change_across_buzz": {
+    "windows": {
+      "control": 12027,
+      "buzz": 2682
+    },
+    "median_net_deg_buzz": 41.306002676132124,
+    "median_net_deg_control": 17.595276295508388,
+    "share_over_30deg_buzz": 0.64215354901014,
+    "share_over_30deg_control": 0.2887288895873852,
+    "whales": 20,
+    "median": -24.387742780285105,
+    "n_negative": 20,
+    "wilcoxon_p": 1.9073486328125e-06,
+    "note": "heading 10-30 s before vs 10-30 s after; n_negative = whales with larger net change across buzzes"
+  },
+  "R2_turn_persistence": {
+    "turns": {
+      "mid": 957,
+      "near": 661,
+      "far": 376
+    },
+    "share_persisting_near": 0.8260211800302572,
+    "share_persisting_far": 0.8962765957446809,
+    "median_net_deg_near": 82.76284924705236,
+    "median_net_deg_far": 94.64039866646581,
+    "whales": 16,
+    "median": -0.11787690225683622,
+    "n_negative": 12,
+    "wilcoxon_p": 0.02287198968477679,
+    "note": "persists = heading 10 s after differs by >30 deg from 10 s before; n_negative = whales whose near-buzz turns persist less"
+  },
+  "R3_turning_near_low_roll_buzzes": {
+    "far_baseline": 0.022078783857151476,
+    "near_lowest_quarter_roll": 0.03531073446327684,
+    "near_low_roll": 0.05296100144439095,
+    "near_high_roll": 0.11764705882352941,
+    "OR_near_low_vs_far": {
+      "or": 2.04035973591981,
+      "ci_low": 1.5340147361519894,
+      "ci_high": 2.713838240175994,
+      "p": 9.57747689925681e-07
+    },
+    "OR_near_high_vs_far": {
+      "or": 5.905646630237087,
+      "ci_low": 4.520973395205233,
+      "ci_high": 7.714414368865671,
+      "p": 8.532136089023904e-39
+    },
+    "whale_level_near_low_minus_far": {
+      "whales": 20,
+      "median": -0.019075325410729135,
+      "n_negative": 18,
+      "wilcoxon_p": 0.0001550957727957702
+    },
+    "note": "roll = mean |roll rate| from 10 s before to 10 s after onset; low = at or below each whale's median"
+  },
+  "X_tactic_by_search_phase": {
+    "b_share_first_in_bout": 0.42297650130548303,
+    "b_share_within_bout": 0.5152253349573691,
+    "n_first": 1532,
+    "n_within": 821,
+    "odds_ratio_first_vs_within": 0.6757875100573734,
+    "ci_low": 0.5788449694445553,
+    "ci_high": 0.7889655829397141,
+    "p": 7.040482355782409e-07,
+    "note": "first_in_bout = preceded by a gap above the bout threshold (arrival after travel)"
+  },
+  "X_tactic_by_search_phase_bottom_only": {
+    "b_share_first_in_bout": 0.39280245022970905,
+    "b_share_within_bout": 0.4971590909090909,
+    "n_first": 1306,
+    "n_within": 704,
+    "odds_ratio_first_vs_within": 0.6486640211133468,
+    "ci_low": 0.5470630751799829,
+    "ci_high": 0.7691343674557187,
+    "p": 6.357533532375064e-07
+  },
+  "X_pre_buzz_turning_by_type": {
+    "median_pre_A_deg_s": 2.756571550900411,
+    "median_pre_B_deg_s": 3.0684929400373626,
+    "whales": 20,
+    "median": 0.22336350755268697,
+    "n_negative": 6,
+    "wilcoxon_p": 0.03276824951171875,
+    "note": "n_negative counts whales turning less before Type B than before Type A"
+  }
+}

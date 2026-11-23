@@ -1,0 +1,32 @@
+{
+  "auc_B_vs_A_ocdr45": 0.8087743732590529,
+  "avg_speed_3d_m_s_vs_ocdr45": {
+    "spearman_pooled": 0.9125876635611593,
+    "spearman_within_whale_median": 0.8821428571428571,
+    "whales": 17,
+    "n": 419,
+    "median_difference_m_s": -0.15403523086568716
+  },
+  "pitch_adaptive_speed_3d_m_s_vs_ocdr45": {
+    "spearman_pooled": 0.9683001711264493,
+    "spearman_within_whale_median": 0.95,
+    "whales": 17,
+    "n": 419,
+    "median_difference_m_s": -0.0007011038081365939
+  },
+  "auc_B_vs_A_ocdr30": 0.84007361923221,
+  "avg_speed_3d_m_s_vs_ocdr30": {
+    "spearman_pooled": 0.8103665039507194,
+    "spearman_within_whale_median": 0.7585150223662429,
+    "whales": 19,
+    "n": 865,
+    "median_difference_m_s": -0.2609576250088801
+  },
+  "pitch_adaptive_speed_3d_m_s_vs_ocdr30": {
+    "spearman_pooled": 0.9256686075401116,
+    "spearman_within_whale_median": 0.9092106313353021,
+    "whales": 19,
+    "n": 865,
+    "median_difference_m_s": -0.0595660005925156
+  }
+}

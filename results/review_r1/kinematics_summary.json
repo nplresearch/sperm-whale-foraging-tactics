@@ -1,0 +1,82 @@
+{
+  "stroke_vs_ocdr45_speed_spearman": {
+    "rho": 0.12334328709233407,
+    "p": 0.00040986216129804457,
+    "n": 817
+  },
+  "registered_labels_reproduced": true,
+  "registered_speed_vs_measured_vertical_speed_spearman": 0.9404783521295815,
+  "dive_budget": {
+    "dives": 243,
+    "median_b_fraction": 0.45454545454545453,
+    "median_b_effort_share": 0.4974666501625136,
+    "median_b_count_share_all_buzzes": 0.3157894736842105
+  },
+  "dive_models": {
+    "log_interdive_all": {
+      "formula": "np.log(interdive_interval_s) ~ b_fraction + dive_min + depth_100m",
+      "n_dives": 188,
+      "n_whales": 20,
+      "b_fraction_coef": -0.3154016376452591,
+      "ci_low": -0.8288913828702248,
+      "ci_high": 0.19808810757970663,
+      "p": 0.22863911284832195,
+      "estimator": "mixedlm"
+    },
+    "log_interdive_le_30min": {
+      "formula": "np.log(interdive_interval_s) ~ b_fraction + dive_min + depth_100m",
+      "n_dives": 176,
+      "n_whales": 20,
+      "b_fraction_coef": -0.006890969596603852,
+      "ci_low": -0.197700383802717,
+      "ci_high": 0.18391844460950932,
+      "p": 0.9435705058733718,
+      "estimator": "mixedlm"
+    },
+    "dive_duration_min": {
+      "formula": "dive_min ~ b_fraction + depth_100m",
+      "n_dives": 200,
+      "n_whales": 20,
+      "b_fraction_coef": -4.029129346424544,
+      "ci_low": -7.807723341439916,
+      "ci_high": -0.25053535140917305,
+      "p": 0.03662524236938262,
+      "estimator": "mixedlm"
+    }
+  },
+  "discreteness": {
+    "posterior_max_histogram_registered": {
+      "[0.5,0.6)": 378,
+      "[0.6,0.7)": 387,
+      "[0.7,0.75)": 235,
+      "[0.75,0.8)": 251,
+      "[0.8,0.9)": 661,
+      "[0.9,0.95)": 535,
+      "[0.95,1.0001)": 1041
+    },
+    "share_posterior_below_0.75": 0.286697247706422,
+    "lrt_k2_vs_k1_parametric_bootstrap_200": {
+      "registered_constant_speed_3d": {
+        "n": 3488,
+        "lr_observed": 92.02001845219118,
+        "null_95th": 37.66334577034263,
+        "null_max": 45.73124523886315,
+        "bootstrap_p": 0.004975124378109453
+      },
+      "measured_vertical_speed": {
+        "n": 3686,
+        "lr_observed": 54.9015822036194,
+        "null_95th": 35.1785029529813,
+        "null_max": 54.624215110659854,
+        "bootstrap_p": 0.004975124378109453
+      },
+      "stroke_effort": {
+        "n": 3489,
+        "lr_observed": 32.83075961619958,
+        "null_95th": 34.47391225675015,
+        "null_max": 56.98836679782613,
+        "bootstrap_p": 0.0845771144278607
+      }
+    }
+  }
+}

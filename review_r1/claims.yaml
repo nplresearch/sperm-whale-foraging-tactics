@@ -1,0 +1,328 @@
+# Registry of every number the R1 response relies on.
+#   letter : value as written in REVIEW_R1_PLAN.md / R1_MANUSCRIPT_CHANGES.md
+#   file   : result file under results/review_r1/ that must reproduce it
+#   status : verified | circular | withdrawn | printed_only   (see common.STATUSES)
+# Selectors: JSON -> `path` list; CSV -> `where` (row filter) + `col` or `expr`.
+# `op: log10` compares orders of magnitude (tiny p-values); `op: le` is an upper bound.
+
+# ---------------------------------------------------------------- M1 speed regimes (R1 pt 2)
+- {id: M1-fallback-share-all, module: M1, status: verified, letter: 0.758, tol: 0.002,
+   text: "75.8 % of all 25-Hz steps use the 0.9 m/s fallback",
+   file: summary.json, path: [step_regime_fractions, all, 0]}
+- {id: M1-fallback-share-foraging, module: M1, status: verified, letter: 0.912, tol: 0.002,
+   text: "91 % of foraging-phase steps use the fallback",
+   file: summary.json, path: [step_regime_fractions, foraging, 0]}
+- {id: M1-fallback-above-0.9, module: M1, status: verified, letter: 0, tol: 0,
+   text: "no released fallback step exceeds 0.9 m/s horizontal speed (inversion is exact)",
+   file: summary.json, path: [fallback_steps_with_horizontal_speed_above_0.9]}
+- {id: M1-energy-reproduction, module: M1, status: verified, letter: 1.0e-9, op: le,
+   text: "production energies reproduce buzz_energy.csv to machine precision",
+   file: summary.json, path: [production_energy_reproduction, max_rel_diff]}
+- {id: M1-A-no-measured-step, module: M1, status: verified, letter: 0.709, tol: 0.002,
+   text: "71 % of Type A buzzes have no measured speed step",
+   file: speed_regime_by_type.csv, where: {buzz_type: A}, col: share_no_measured_step}
+- {id: M1-B-no-measured-step, module: M1, status: verified, letter: 0.025, tol: 0.002,
+   text: "2.5 % of Type B buzzes have no measured speed step",
+   file: speed_regime_by_type.csv, where: {buzz_type: B}, col: share_no_measured_step}
+- {id: M1-A-frac-fallback, module: M1, status: verified, letter: 0.965, tol: 0.002,
+   text: "mean share of Type A buzz steps on fallback 96.5 %",
+   file: speed_regime_by_type.csv, where: {buzz_type: A}, col: mean_frac_fallback}
+- {id: M1-B-frac-fallback, module: M1, status: verified, letter: 0.608, tol: 0.002,
+   text: "mean share of Type B buzz steps on fallback 60.8 %",
+   file: speed_regime_by_type.csv, where: {buzz_type: B}, col: mean_frac_fallback}
+- {id: M1-A-pre10-no-measured, module: M1, status: verified, letter: 0.548, tol: 0.002,
+   text: "same, 10 s before onset, Type A 54.8 %",
+   file: speed_regime_by_type.csv, where: {buzz_type: A}, col: pre10s_share_no_measured}
+- {id: M1-B-clipped-touch, module: M1, status: verified, letter: 0.232, tol: 0.002,
+   text: "23.2 % of Type B buzzes touch a clipped step",
+   file: speed_regime_by_type.csv, where: {buzz_type: B}, col: share_any_clipped}
+- {id: M1-A-median-speed, module: M1, status: verified, letter: 0.97, tol: 0.01,
+   text: "median Type A buzz speed 0.97 m/s (sits on the fallback)",
+   file: speed_regime_by_type.csv, where: {buzz_type: A}, col: median_mean_speed_production}
+- {id: M1-B-median-speed-cap-effect, module: M1, status: verified, letter: 0.016, tol: 0.003,
+   text: "removing the 5 m/s cap moves the Type B median by ~0.02 m/s (cap is not the issue)",
+   file: speed_regime_by_type.csv, where: {buzz_type: B}, expr: "median_mean_speed_noclip - median_mean_speed_production"}
+
+# ---------------------------------------------------------------- M2 independent speed / effort (R1 pt 2)
+# Speed contrasts: B is faster at matched pitch, but labels are built on vertical speed -> circular.
+- {id: M2-speed-ratio-30, module: M2, status: circular, letter: 1.72, tol: 0.01,
+   text: "B/A swim speed at matched posture, >=30 deg (1.72)",
+   file: speed_matched_models.csv, where: {threshold_deg: 30, model: matched_posture_direction_depth}, col: B_over_A}
+- {id: M2-speed-ratio-45, module: M2, status: circular, letter: 1.75, tol: 0.01,
+   text: "B/A swim speed at matched posture, >=45 deg (1.75)",
+   file: speed_matched_models.csv, where: {threshold_deg: 45, model: matched_posture_direction_depth}, col: B_over_A}
+- {id: M2-auc-30, module: M2, status: circular, letter: 0.84, tol: 0.005,
+   text: "AUC of measured speed for B vs A, >=30 deg",
+   file: speed_summary.json, path: [auc_B_vs_A_ocdr30]}
+- {id: M2-auc-45, module: M2, status: circular, letter: 0.81, tol: 0.005,
+   text: "AUC of measured speed for B vs A, >=45 deg",
+   file: speed_summary.json, path: [auc_B_vs_A_ocdr45]}
+- {id: M2-ocdr-coverage-A, module: M2, status: verified, letter: 0.045, tol: 0.002,
+   text: "OCDR (>=45 deg) valid for >= half of the buzz in only 4.5 % of Type A buzzes",
+   file: ocdr_coverage_by_type.csv, where: {buzz_type: A}, col: share_ocdr45_half}
+- {id: M2-ocdr-coverage-B, module: M2, status: verified, letter: 0.314, tol: 0.002,
+   text: "same for Type B: 31 %",
+   file: ocdr_coverage_by_type.csv, where: {buzz_type: B}, col: share_ocdr45_half}
+- {id: M2-stroke-rel-bottom-A, module: M2, status: verified, letter: 0.83, tol: 0.005,
+   text: "Type A stroke effort is 0.83x the dive's bottom-phase level",
+   file: stroke_relative_to_bottom.csv, where: {metric: stroke_rel_bottom}, col: median_A}
+- {id: M2-stroke-rel-bottom-B, module: M2, status: verified, letter: 1.12, tol: 0.005,
+   text: "Type B stroke effort is 1.12x the bottom-phase level",
+   file: stroke_relative_to_bottom.csv, where: {metric: stroke_rel_bottom}, col: median_B}
+- {id: M2-stroke-rel-bottom-whales, module: M2, status: verified, letter: 20, tol: 0,
+   text: "B > A in 20 of 20 whales for stroke relative to bottom level",
+   file: stroke_relative_to_bottom.csv, where: {metric: stroke_rel_bottom}, col: whales_B_gt_A}
+- {id: M2-stroke-low-angle-ratio, module: M2, status: verified, letter: 1.59, tol: 0.01,
+   text: "near-horizontal (<15 deg) Type B strokes 1.59x harder than Type A",
+   file: stroke_by_posture.csv, where: {abs_pitch_deg: "(0, 15]"}, col: ratio_B_A}
+- {id: M2-stroke-vs-ocdr-rho, module: M2, status: verified, letter: 0.12, tol: 0.01,
+   text: "stroke effort correlates only weakly with OCDR speed (rho 0.12)",
+   file: kinematics_summary.json, path: [stroke_vs_ocdr45_speed_spearman, rho]}
+- {id: M2-ocdr45-median-B-speed, module: M2, status: circular, letter: 1.73, tol: 0.01,
+   text: "OCDR speed where valid >=45 deg: Type B median 1.73 m/s",
+   file: kinematics_type_contrasts.csv, where: {metric: buzz_ocdr45_speed_m_s}, col: median_B}
+
+# ---------------------------------------------------------------- M3 classifier & discreteness (R1 pt 3)
+- {id: M3-registered-vs-vertical-rho, module: M3, status: verified, letter: 0.94, tol: 0.005,
+   text: "registered classifier speed vs measured vertical speed, Spearman rho 0.94",
+   file: kinematics_summary.json, path: [registered_speed_vs_measured_vertical_speed_spearman]}
+- {id: M3-labels-reproduced, module: M3, status: verified, letter: 1, tol: 0,
+   text: "registered A/B labels are reproduced exactly from the public tables",
+   file: kinematics_summary.json, path: [registered_labels_reproduced]}
+- {id: M3-kappa-vertical, module: M3, status: verified, letter: 0.997, tol: 0.001,
+   text: "GMM on measured vertical speed: kappa 0.997 with registered labels",
+   file: classifier_kinematic_retest.csv, where: {variant: measured_vertical_speed}, col: kappa_with_registered}
+- {id: M3-kappa-stroke, module: M3, status: verified, letter: 0.82, tol: 0.005,
+   text: "GMM on stroke effort (no speed): kappa 0.82",
+   file: classifier_kinematic_retest.csv, where: {variant: stroke_effort}, col: kappa_with_registered}
+- {id: M3-agreement-stroke, module: M3, status: verified, letter: 0.91, tol: 0.005,
+   text: "stroke-effort classifier agrees on 91 % of confidently labelled buzzes",
+   file: classifier_kinematic_retest.csv, where: {variant: stroke_effort}, col: agreement_with_registered}
+- {id: M3-dBIC-registered, module: M3, status: verified, letter: -43.1, tol: 0.2,
+   text: "converged BIC, k=2 minus k=1, registered features",
+   file: classifier_kinematic_retest.csv, where: {variant: registered_constant_speed_3d}, expr: "bic_k2 - bic_k1"}
+- {id: M3-dBIC-k3-vs-k2, module: M3, status: verified, letter: -2.0, tol: 0.2,
+   text: "k=3 edges k=2 by only 2 BIC points, so 'minimum at k=2' is not exact",
+   file: classifier_kinematic_retest.csv, where: {variant: registered_constant_speed_3d}, expr: "bic_k3 - bic_k2"}
+- {id: M3-dBIC-vertical, module: M3, status: verified, letter: -5.6, tol: 0.2,
+   text: "measured vertical speed: k=2 minus k=1",
+   file: classifier_kinematic_retest.csv, where: {variant: measured_vertical_speed}, expr: "bic_k2 - bic_k1"}
+- {id: M3-dBIC-stroke, module: M3, status: verified, letter: 16.1, tol: 0.2,
+   text: "stroke effort: k=2 does not beat k=1 (+16.1)",
+   file: classifier_kinematic_retest.csv, where: {variant: stroke_effort}, expr: "bic_k2 - bic_k1"}
+- {id: M3-posterior-below-075, module: M3, status: verified, letter: 0.287, tol: 0.002,
+   text: "28.7 % of buzzes have maximum posterior below 0.75",
+   file: kinematics_summary.json, path: [discreteness, share_posterior_below_0.75]}
+- {id: M3-posterior-above-095, module: M3, status: verified, letter: 1041, tol: 0,
+   text: "1,041 buzzes have posterior >= 0.95",
+   file: kinematics_summary.json, path: [discreteness, posterior_max_histogram_registered, "[0.95,1.0001)"]}
+- {id: M3-lrt-registered-p, module: M3, status: verified, letter: 0.005, tol: 0.0005,
+   text: "bootstrap p, registered features (200 resamples; floor is 1/201)",
+   file: kinematics_summary.json, path: [discreteness, lrt_k2_vs_k1_parametric_bootstrap_200, registered_constant_speed_3d, bootstrap_p]}
+- {id: M3-lrt-registered-lr, module: M3, status: verified, letter: 92, tol: 0.5,
+   text: "observed LR 92 vs null maximum 46",
+   file: kinematics_summary.json, path: [discreteness, lrt_k2_vs_k1_parametric_bootstrap_200, registered_constant_speed_3d, lr_observed]}
+- {id: M3-lrt-stroke-p, module: M3, status: verified, letter: 0.085, tol: 0.005,
+   text: "stroke effort: bootstrap p 0.085, k=2 not supported",
+   file: kinematics_summary.json, path: [discreteness, lrt_k2_vs_k1_parametric_bootstrap_200, stroke_effort, bootstrap_p]}
+
+# ---------------------------------------------------------------- M4 energetics (R1 pt 4)
+- {id: M4-prod-total-ratio, module: M4, status: withdrawn, letter: 7.1, tol: 0.05,
+   text: "production energy B/A = 7.1 (to be dropped from the paper)",
+   file: energy_variants_summary.csv, where: {variant: production, quantity: E_total_J}, col: B_over_A}
+- {id: M4-prod-drag-ratio, module: M4, status: verified, letter: 3.1, tol: 0.05,
+   text: "production, drag + resting only: B/A 3.1",
+   file: energy_variants_summary.csv, where: {variant: production, quantity: E_drag_only_J}, col: B_over_A}
+- {id: M4-smooth1s-ratio, module: M4, status: verified, letter: 35, tol: 0.5,
+   text: "1-s smoothing pushes B/A to ~35: the sevenfold figure is not identified",
+   file: energy_variants_summary.csv, where: {variant: smooth1s, quantity: E_total_J}, col: B_over_A}
+- {id: M4-acc-share, module: M4, status: verified, letter: 0.99, tol: 0.005,
+   text: "99 % of modelled mechanical work is the acceleration term",
+   file: energy_variants_summary.csv, where: {variant: production, quantity: E_total_J}, col: acc_share_of_mech_work}
+- {id: M4-prod-power-over-rest, module: M4, status: verified, letter: 114, tol: 0.5,
+   text: "median Type B buzz power is 114x the model's resting rate",
+   file: energy_variants_summary.csv, where: {variant: production, quantity: E_total_J}, col: median_power_over_rest_B}
+- {id: M4-female-A-MJ, module: M4, status: verified, letter: 0.44, tol: 0.005,
+   text: "13.5 t / 11 m: Type A 0.44 MJ",
+   file: energy_variants_summary.csv, where: {variant: female_13.5t, quantity: E_total_J}, col: A_MJ}
+- {id: M4-female-B-MJ, module: M4, status: verified, letter: 3.08, tol: 0.01,
+   text: "13.5 t / 11 m: Type B 3.08 MJ",
+   file: energy_variants_summary.csv, where: {variant: female_13.5t, quantity: E_total_J}, col: B_MJ}
+- {id: M4-ocdr-drag-ratio-30, module: M4, status: circular, letter: 2.65, tol: 0.01,
+   text: "drag at OCDR speed (>=30 deg): B/A 2.65 (rests on the circular speed contrast)",
+   file: energy_rebuilt_summary.csv, where: {basis: "drag at OCDR speed, |pitch|>=30, coverage>=0.5, 13.5 t"}, col: B_over_A}
+- {id: M4-energy-per-buzz-30, module: M4, status: circular, letter: 2.70, tol: 0.01,
+   text: "matched energy per buzz B/A 2.70",
+   file: speed_matched_models.csv, where: {threshold_deg: 30, model: energy_per_buzz_matched}, col: B_over_A}
+- {id: M4-power-ratio-30, module: M4, status: circular, letter: 1.47, tol: 0.01,
+   text: "matched drag power B/A 1.47",
+   file: speed_matched_models.csv, where: {threshold_deg: 30, model: power_matched}, col: B_over_A}
+- {id: M4-cumulative-stroke-ratio, module: M4, status: verified, letter: 2.39, tol: 0.01,
+   text: "cumulative stroke effort B/A 2.39 (mostly the 1.9x longer Type B buzzes)",
+   file: energy_rebuilt_summary.csv, where: {basis: "stroke index: stroke_effort_deg_s"}, col: B_over_A}
+- {id: M4-stroke-intensity-ratio, module: M4, status: verified, letter: 1.27, tol: 0.01,
+   text: "stroke intensity (RMS) B/A 1.27",
+   file: energy_rebuilt_summary.csv, where: {basis: "stroke index: buzz_stroke_rms_deg"}, col: B_over_A}
+- {id: M4-median-power-over-rest, module: M4, status: verified, letter: 1.87, tol: 0.02,
+   text: "median buzz power ~1.9x resting (plausible), vs 114x in the published model",
+   file: energy_rebuilt_summary.csv, where: {basis: "drag at OCDR speed, |pitch|>=30, coverage>=0.5, 13.5 t"}, col: median_power_over_rest}
+- {id: M4-dive-share-dive-length, module: M4, status: verified, letter: 0.037, tol: 0.002,
+   text: "dive length vs Type-B share (all buzzes): p 0.037, exploratory",
+   file: kinematics_summary.json, path: [dive_models, dive_duration_min, p]}
+- {id: M4-interdive-p, module: M4, status: verified, letter: 0.229, tol: 0.002,
+   text: "inter-dive interval not related to Type-B share (p 0.23)",
+   file: kinematics_summary.json, path: [dive_models, log_interdive_all, p]}
+- {id: M4-costly-share-coef, module: M4, status: verified, letter: -0.44, tol: 0.01,
+   text: "genuinely costly Type B share vs dive length: -0.4 min",
+   file: foraging_models.json, path: [energy, E1_dive_min_share_costly, coef]}
+- {id: M4-costly-share-p, module: M4, status: verified, letter: 0.82, tol: 0.01,
+   text: "...p = 0.82",
+   file: foraging_models.json, path: [energy, E1_dive_min_share_costly, p]}
+- {id: M4-stroke-vs-dive-coef, module: M4, status: verified, letter: 1.35, tol: 0.02,
+   text: "more active dives last longer: +1.3 min per SD",
+   file: foraging_models.json, path: [energy, E2_dive_min_vs_bottom_stroke, coef]}
+- {id: M4-stroke-vs-dive-p, module: M4, status: verified, letter: 0.018, tol: 0.002,
+   text: "...p = 0.018 (opposite sign to oxygen limitation)",
+   file: foraging_models.json, path: [energy, E2_dive_min_vs_bottom_stroke, p]}
+
+# ---------------------------------------------------------------- M5 trajectory search (not raised by R1; pre-emptive)
+- {id: M5-per-whale-two-geometric, module: M5, status: verified, letter: 13, tol: 0,
+   text: "two-mode mixture best in 13 of 15 fitted whales (5 s, 30 deg)",
+   file: trajectory_tests.json, path: [S_per_whale_model_choice, 5s_30deg, two_geometric]}
+- {id: M5-per-whale-fitted, module: M5, status: verified, letter: 15, tol: 0,
+   text: "only 15 of 20 whales have enough steps to fit at the primary setting",
+   file: trajectory_tests.json, path: [S_per_whale_model_choice, 5s_30deg, whales_fitted]}
+- {id: M5-pooled-dAIC, module: M5, status: verified, letter: 325, tol: 1,
+   text: "pooled AIC advantage of the mixture over a power law",
+   file: trajectory_tests.json, path: [S_pooled_fit, aic_power_law], minus_path: [S_pooled_fit, aic_two_geometric]}
+- {id: M5-turn-odds-ratio, module: M5, status: verified, letter: 0.57, tol: 0.005,
+   text: "turn probability OR 0.57 per log-second from nearest buzz",
+   file: trajectory_tests.json, path: [M2_block_turn_probability, odds_ratio_per_log_s]}
+- {id: M5-turn-p, module: M5, status: verified, letter: 1.0e-31, op: log10, tol: 1.0,
+   text: "p ~ 1e-31 (block-level GEE; blocks are autocorrelated, read as 'very small')",
+   file: trajectory_tests.json, path: [M2_block_turn_probability, p]}
+- {id: M5-turn-within-10s, module: M5, status: verified, letter: 0.081, tol: 0.001,
+   text: "turn probability 8.1 % within 10 s of a buzz",
+   file: trajectory_tests.json, path: [M2_block_turn_probability, by_bin, "[0.0, 10.0)"]}
+- {id: M5-step-rho, module: M5, status: verified, letter: 0.35, tol: 0.005,
+   text: "step-duration vs distance-to-buzz rho 0.35 (circular-shift null -0.01)",
+   file: trajectory_tests.json, path: [M3_step_rho_permutation, observed_rho]}
+- {id: M5-perm-p, module: M5, status: verified, letter: 0.005, tol: 0.0005,
+   text: "permutation p 0.005 (floor 1/201)",
+   file: trajectory_tests.json, path: [M3_step_rho_permutation, p]}
+- {id: M5-msd-vs-rate-p, module: M5, status: verified, letter: 0.001, tol: 0.0006,
+   text: "3-D MSD slope falls with buzz rate (p 0.001)",
+   file: trajectory_tests.json, path: [L_alpha_msd_vs_buzz_rate, p]}
+- {id: M5-hmsd-vs-rate-p, module: M5, status: verified, letter: 0.22, tol: 0.005,
+   text: "horizontal MSD slope does not (p 0.22)",
+   file: trajectory_tests.json, path: [L_alpha_horizontal_vs_buzz_rate, p]}
+- {id: M5-turns-vs-rate-p, module: M5, status: verified, letter: 0.52, tol: 0.005,
+   text: "turns per minute vs buzz rate p 0.52",
+   file: trajectory_tests.json, path: [L_turns_per_min_vs_buzz_rate, p]}
+- {id: M5-persistence-vs-rate-p, module: M5, status: verified, letter: 0.94, tol: 0.005,
+   text: "heading persistence vs buzz rate p 0.94",
+   file: trajectory_tests.json, path: [L_persistence_60s_vs_buzz_rate, p]}
+- {id: M5-mu-vs-rate-p, module: M5, status: verified, letter: 0.0095, tol: 0.001,
+   text: "mu vs buzz rate (15 dives): p 0.009. Significant and NOT mentioned in the plan: report it",
+   file: trajectory_tests.json, path: [L_mu_vs_buzz_rate, p]}
+- {id: M5-asr-p, module: M5, status: verified, letter: 0.28, tol: 0.005,
+   text: "no sustained post-buzz turning increase (p 0.28)",
+   file: trajectory_tests.json, path: [A_post_minus_pre_turn_rate, wilcoxon_p]}
+- {id: M5-mvt-coef, module: M5, status: verified, letter: -0.13, tol: 0.005,
+   text: "longer travel -> shorter bouts (-0.13 per log-s)",
+   file: trajectory_tests.json, path: [V_residence_vs_travel, coef]}
+- {id: M5-mvt-p, module: M5, status: verified, letter: 0.014, tol: 0.001,
+   text: "...p 0.014 (0.097 if the last bout of each dive is included)",
+   file: trajectory_tests.json, path: [V_residence_vs_travel, p]}
+- {id: M5-mvt-incl-last-p, module: M5, status: verified, letter: 0.097, tol: 0.003,
+   text: "MVT result is not robust to including each dive's last bout",
+   file: trajectory_tests.json, path: [V_residence_vs_travel_incl_last_bout, p]}
+
+# ---------------------------------------------------------------- M6 tactic <-> search coupling, phase check
+- {id: M6-heading-change-buzz, module: M6, status: verified, letter: 41.3, tol: 0.2,
+   text: "median net heading change across a buzz 41 deg",
+   file: trajectory_tests.json, path: [R1_net_heading_change_across_buzz, median_net_deg_buzz]}
+- {id: M6-heading-change-control, module: M6, status: verified, letter: 17.6, tol: 0.2,
+   text: "...vs 18 deg in matched windows with no buzz",
+   file: trajectory_tests.json, path: [R1_net_heading_change_across_buzz, median_net_deg_control]}
+- {id: M6-lowroll-turn-near, module: M6, status: verified, letter: 0.053, tol: 0.001,
+   text: "turning within 10 s of low-roll buzzes 5.3 %",
+   file: trajectory_tests.json, path: [R3_turning_near_low_roll_buzzes, near_low_roll]}
+- {id: M6-lowroll-turn-far, module: M6, status: verified, letter: 0.022, tol: 0.001,
+   text: "...vs 2.2 % baseline",
+   file: trajectory_tests.json, path: [R3_turning_near_low_roll_buzzes, far_baseline]}
+- {id: M6-lowroll-or, module: M6, status: verified, letter: 2.04, tol: 0.01,
+   text: "OR 2.04 near low-roll buzzes",
+   file: trajectory_tests.json, path: [R3_turning_near_low_roll_buzzes, OR_near_low_vs_far, or]}
+- {id: M6-first-in-bout-B, module: M6, status: verified, letter: 0.423, tol: 0.002,
+   text: "Type B is 42 % of first-in-bout buzzes",
+   file: trajectory_tests.json, path: [X_tactic_by_search_phase, b_share_first_in_bout]}
+- {id: M6-within-bout-B, module: M6, status: verified, letter: 0.515, tol: 0.002,
+   text: "...vs 52 % within a bout",
+   file: trajectory_tests.json, path: [X_tactic_by_search_phase, b_share_within_bout]}
+- {id: M6-bout-or-bottom, module: M6, status: verified, letter: 0.65, tol: 0.005,
+   text: "bottom-phase only: OR 0.65 (first-in-bout vs within)",
+   file: trajectory_tests.json, path: [X_tactic_by_search_phase_bottom_only, odds_ratio_first_vs_within]}
+- {id: M6-prebuzz-turning-p, module: M6, status: verified, letter: 0.033, tol: 0.002,
+   text: "pre-buzz turning higher for Type B (p 0.033): nominal, 14/20 whales",
+   file: trajectory_tests.json, path: [X_pre_buzz_turning_by_type, wilcoxon_p]}
+- {id: M6-C1-gap-or, module: M6, status: verified, letter: 0.73, tol: 0.005,
+   text: "shorter gap since previous buzz -> Type B (OR 0.73 per log-min)",
+   file: foraging_models.json, path: [dswp, C1_gap_since_previous, np.log(gap_min), odds_ratio]}
+- {id: M6-D4-all-or, module: M6, status: withdrawn, letter: 2.17, tol: 0.01,
+   text: "Type B is the dive's last buzz, all buzzes: OR 2.17 (transit artefact)",
+   file: foraging_models.json, path: [dswp, D4_terminal_matched, is_b, odds_ratio]}
+- {id: M6-D4-bottom-or, module: M6, status: verified, letter: 0.93, tol: 0.01,
+   text: "...bottom phase only: OR 0.93, p 0.77",
+   file: foraging_models.json, path: [dswp, P_D4_terminal_bottom_only, is_b, odds_ratio]}
+- {id: M6-D3-all-coef, module: M6, status: withdrawn, letter: -4.43, tol: 0.02,
+   text: "Type-B share -> shorter dives, all buzzes (counting artefact)",
+   file: foraging_models.json, path: [dswp, D3_dive_min_vs_b_share, coef]}
+- {id: M6-D3-bottom-p, module: M6, status: verified, letter: 0.20, tol: 0.005,
+   text: "...bottom phase only: p 0.20",
+   file: foraging_models.json, path: [dswp, P_D3_dive_min_vs_bottom_b_share, p]}
+- {id: M6-final-B-in-ascent, module: M6, status: verified, letter: 0.84, tol: 0.005,
+   text: "84 % of dive-final Type B buzzes fall in the ascent",
+   file: foraging_models.json, path: [dswp, P_where_last_buzzes_fall, B, share_in_ascent]}
+- {id: M6-transit-acoustic-ascent, module: M6, status: verified, letter: 0.90, tol: 0.005,
+   text: "acoustic classifier confirms 90 % of ascent Type B",
+   file: foraging_models.json, path: [transit, Q1_acoustic_all, ascent, acoustically_B_among_labelled_B]}
+- {id: M6-transit-stroke-ascent-p, module: M6, status: verified, letter: 0.0005, tol: 0.0001,
+   text: "ascent Type B is low-effort (stroke 3.7 vs 4.7, p 0.0005)",
+   file: foraging_models.json, path: [transit, Q2_stroke_B_ascent_vs_bottom, wilcoxon_p]}
+- {id: M6-D1-p, module: M6, status: verified, letter: 0.5, op: ge,
+   text: "patch-quality prediction D1 NOT supported (p > 0.5, 180-s window)",
+   file: foraging_models.json, path: [dswp, D1_early_rate_180s, p]}
+
+# ---------------------------------------------------------------- M7 Azores (validation, one juvenile whale)
+- {id: M7-echo-n-A, module: M7, status: verified, letter: 19, tol: 0,
+   text: "Type A buzzes with echoes: 19", file: foraging_models.json, path: [azores, ts_nearest, n_A]}
+- {id: M7-echo-n-B, module: M7, status: verified, letter: 11, tol: 0,
+   text: "Type B buzzes with echoes: 11", file: foraging_models.json, path: [azores, ts_nearest, n_B]}
+- {id: M7-echo-p, module: M7, status: verified, letter: 0.14, tol: 0.005,
+   text: "range-corrected echo level not higher for B (p 0.14): inconclusive",
+   file: foraging_models.json, path: [azores, ts_nearest, mann_whitney_p]}
+- {id: M7-echo-slope, module: M7, status: verified, letter: -24, tol: 0.5,
+   text: "echo level falls ~24 dB per decade of range (40 dB expected for a fixed target)",
+   file: foraging_models.json, path: [azores, echo_level_check, median_slope_db_per_decade]}
+- {id: M7-bottom-phase-n, module: M7, status: printed_only, letter: 56, text: "56 of 58 daytime buzzes in the bottom phase (70 % depth rule)"}
+- {id: M7-depth-diff, module: M7, status: printed_only, letter: 65, text: "Type A prey 65 m deeper than B within dives (p<0.001)"}
+- {id: M7-seafloor-drop, module: M7, status: printed_only, letter: 44, text: "Type A drops ~44 m in last 60 s before buzz (p<0.001)"}
+- {id: M6-decomposition-transit-part, module: M6, status: printed_only, letter: -13.3,
+   text: "transit share of Type B carries -13.3 min per unit (share_decomposition script)"}
+
+# ---------------------------------------------------------------- M2 circularity control (new, this branch)
+- {id: M2-circ-ratio-pitch-only, module: M2, status: verified, letter: 1.77, tol: 0.02,
+   text: "B/A OCDR speed controlling only for pitch (what the draft quotes) = 1.77",
+   file: m2_circularity_adjusted_30.csv, where: {model: pitch_only}, col: B_over_A}
+- {id: M2-circ-ratio-vz-matched, module: M2, status: verified, letter: 1.00, tol: 0.02,
+   text: "B/A OCDR speed once |vertical speed| is also controlled = 1.00 (CI 0.98-1.02): the gap is the label",
+   file: m2_circularity_adjusted_30.csv, where: {model: pitch_and_vertical_speed}, col: B_over_A}
+
+# ---------------------------------------------------------------- numbers quoted in the plan that no file stores
+- {id: M5-step-mu-sampling-rate, module: M5, status: printed_only, letter: 2.34,
+   text: "mu = 2.34 @25 Hz, 1.45 @1 Hz, 1.72 @0.2 Hz (sampling-artefact demonstration; only in the plan)"}
+- {id: M5-turn-heading-vs-vertical, module: M5, status: printed_only, letter: 0.14,
+   text: "median heading change at a 25-Hz 'turn' 0.14 deg vs vertical-angle change 34 deg"}
+- {id: M0-flipped-pitch-buzzes, module: M0, status: printed_only, letter: 17,
+   text: "17 internal-table buzzes with 180-deg pitch/heading error"}
